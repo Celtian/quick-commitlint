@@ -1,0 +1,40 @@
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header class="site-header">
+  <mat-toolbar>
+    <a class="brand" routerLink="/" aria-label="Quick Commitlint home">
+      <span class="brand-mark" aria-hidden="true">⚡</span>
+      <span>Quick Commitlint</span>
+    </a>
+
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a mat-button routerLink="/docs" routerLinkActive="active-link">Docs</a>
+      <a mat-button [href]="githubUrl">GitHub</a>
+      <app-theme-selector />
+    </nav>
+  </mat-toolbar>
+</header>
+
+<main id="main-content" tabindex="-1">
+  <router-outlet />
+</main>
+
+<footer class="site-footer">
+  <div>
+    <span>Quick Commitlint · MIT licensed</span>
+    <span aria-hidden="true"> · </span>
+    <a [href]="githubUrl">Source on GitHub</a>
+  </div>
+  <div>Built with Angular 22 and Zig.</div>
+</footer>
+
+<button
+  mat-mini-fab
+  type="button"
+  class="back-to-top"
+  aria-label="Back to top"
+  ngxScrollTop
+  ngxScrollTopMode="smart"
+>
+  <span aria-hidden="true">↑</span>
+</button>

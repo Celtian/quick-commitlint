@@ -1,0 +1,24 @@
+:host {
+  display: inline-flex;
+}
+
+button {
+  min-width: auto;
+}
+
+button > span:first-child {
+  font-size: 1.25rem;
+  margin-inline-end: 0.4rem;
+}
+
+@media (max-width: 37.5rem) {
+  .theme-label {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+}

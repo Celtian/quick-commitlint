@@ -4,6 +4,7 @@ zig-cache/
 zig-out/
 
 # Node.js and packaging artifacts
+.angular/
 node_modules/
 dist/
 coverage/

@@ -1,0 +1,136 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.home {
+  display: grid;
+  gap: clamp(3rem, 8vw, 6rem);
+}
+
+.hero {
+  margin-inline: auto;
+  max-width: 54rem;
+  padding-block-start: clamp(2rem, 7vw, 6rem);
+  text-align: center;
+}
+
+.eyebrow {
+  color: var(--mat-sys-primary);
+  font: var(--mat-sys-label-large);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  font: var(--mat-sys-display-medium);
+  letter-spacing: -0.04em;
+  margin: 0.75rem 0 1rem;
+  outline: none;
+}
+
+.hero-copy {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-large);
+  margin: 0 auto;
+  max-width: 44rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-block-start: 2rem;
+}
+
+.terminal-demo {
+  margin: 0;
+  text-align: center;
+}
+
+.terminal-demo img {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  box-shadow: var(--mat-sys-level3);
+  height: auto;
+  max-width: 100%;
+}
+
+figcaption {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+  margin-block-start: 0.75rem;
+}
+
+.benefits h2,
+.next-step h2,
+.install h2 {
+  font: var(--mat-sys-headline-medium);
+  margin-block: 0 1.5rem;
+}
+
+.benefit-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+mat-card {
+  background: var(--mat-sys-surface-container-low);
+}
+
+mat-card-content {
+  color: var(--mat-sys-on-surface-variant);
+  padding-block-start: 1rem;
+}
+
+.install {
+  align-items: center;
+  background: var(--mat-sys-surface-container);
+  border-radius: 1rem;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.install p {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.install-commands {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+pre {
+  background: var(--mat-sys-inverse-surface);
+  border-radius: 0.5rem;
+  color: var(--mat-sys-inverse-on-surface);
+  margin: 0;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.next-step {
+  padding-block-end: clamp(2rem, 6vw, 5rem);
+  text-align: center;
+}
+
+.next-step p {
+  color: var(--mat-sys-on-surface-variant);
+  margin-block-end: 1.5rem;
+}
+
+@media (max-width: 50rem) {
+  .benefit-grid,
+  .install {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font: var(--mat-sys-display-small);
+  }
+}

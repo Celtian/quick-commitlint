@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quick Commitlint — Fast native commit message linting</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Quick Commitlint is a fast, dependency-free Conventional Commit message linter built with Zig."
+    />
+    <meta name="theme-color" content="#005cbb" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Quick Commitlint" />
+    <meta property="og:title" content="Quick Commitlint — Fast native commit message linting" />
+    <meta
+      property="og:description"
+      content="A fast, dependency-free Conventional Commit message linter built with Zig."
+    />
+    <meta property="og:url" content="https://celtian.github.io/quick-commitlint/" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="canonical" href="https://celtian.github.io/quick-commitlint/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script>
+      (() => {
+        try {
+          const preference = localStorage.getItem('quick-commitlint-theme');
+          document.documentElement.style.colorScheme =
+            preference === 'light' || preference === 'dark' ? preference : 'light dark';
+        } catch {
+          document.documentElement.style.colorScheme = 'light dark';
+        }
+      })();
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Quick Commitlint",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux x86-64",
+        "url": "https://celtian.github.io/quick-commitlint/",
+        "codeRepository": "https://github.com/Celtian/quick-commitlint"
+      }
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

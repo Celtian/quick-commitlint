@@ -1,0 +1,24 @@
+<button
+  mat-button
+  type="button"
+  aria-label="Choose color theme"
+  [matMenuTriggerFor]="themeMenu"
+  [attr.aria-description]="'Current theme: ' + currentLabel()"
+>
+  <span aria-hidden="true">◐</span>
+  <span class="theme-label">{{ currentLabel() }}</span>
+</button>
+
+<mat-menu #themeMenu="matMenu" aria-label="Color theme">
+  @for (option of options; track option.value) {
+    <button
+      mat-menu-item
+      type="button"
+      role="menuitemradio"
+      [attr.aria-checked]="theme.preference() === option.value"
+      (click)="select(option.value)"
+    >
+      {{ option.label }}
+    </button>
+  }
+</mat-menu>

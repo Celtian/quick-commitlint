@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  min-height: 100%;
+  width: 100%;
+}
+
+mat-sidenav-container {
+  background: var(--mat-sys-surface);
+  flex: 1 1 auto;
+}
+
+mat-sidenav {
+  background: var(--mat-sys-surface-container-low);
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  padding: 1rem 0.75rem;
+  width: 17.5rem;
+}
+
+.nav-heading {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-large);
+  letter-spacing: 0.06em;
+  margin: 1.25rem 1rem 0.25rem;
+  text-transform: uppercase;
+}
+
+.nav-heading:first-child {
+  margin-block-start: 0.5rem;
+}
+
+.mobile-docs-bar {
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  padding: 0.75rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+mat-sidenav-content {
+  min-height: 100%;
+}
