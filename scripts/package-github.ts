@@ -9,17 +9,17 @@ pkg.packageManager = undefined;
 pkg.engines = undefined;
 pkg.files = undefined;
 pkg.bin = {
-  'quick-commitlint': 'bin/quick-commitlint'
+  'quick-commitlint': 'bin/quick-commitlint',
 };
 pkg.os = ['linux'];
 pkg.cpu = ['x64'];
 pkg.name = '@celtian/quick-commitlint';
 pkg.publishConfig = {
-  registry: 'https://npm.pkg.github.com'
+  registry: 'https://npm.pkg.github.com',
 };
 
-const distDir = join(__dirname, '..', 'dist');
+const distDir = join(__dirname, '..', 'dist', 'quick-commitlint');
 ensureDirSync(distDir);
 writeFileSync(join(distDir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n');
 
-console.log('Generated the GitHub Packages manifest in dist/.');
+console.log('Generated the GitHub Packages manifest in dist/quick-commitlint/.');

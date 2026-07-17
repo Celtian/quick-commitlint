@@ -1,0 +1,16 @@
+<article class="doc-page" [attr.aria-labelledby]="'doc-heading-' + document().path">
+  <header>
+    <p class="eyebrow">Quick Commitlint documentation</p>
+    <h1 [id]="'doc-heading-' + document().path" tabindex="-1">{{ document().heading }}</h1>
+    <p class="description">{{ document().description }}</p>
+  </header>
+
+  <markdown class="markdown-content" [data]="markdownBody()" [disableSanitizer]="false" />
+
+  @if (nextDocument(); as next) {
+    <nav class="next-document" aria-label="Next documentation page">
+      <span>Next</span>
+      <a mat-stroked-button [routerLink]="['/docs', next.path]">{{ next.label }} →</a>
+    </nav>
+  }
+</article>

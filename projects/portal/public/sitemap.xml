@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://celtian.github.io/quick-commitlint/</loc></url>
+  <url><loc>https://celtian.github.io/quick-commitlint/docs/getting-started/</loc></url>
+  <url><loc>https://celtian.github.io/quick-commitlint/docs/usage/</loc></url>
+  <url><loc>https://celtian.github.io/quick-commitlint/docs/configuration/</loc></url>
+  <url><loc>https://celtian.github.io/quick-commitlint/docs/rules/</loc></url>
+  <url><loc>https://celtian.github.io/quick-commitlint/docs/cli/</loc></url>
+  <url><loc>https://celtian.github.io/quick-commitlint/docs/development/</loc></url>
+</urlset>
+

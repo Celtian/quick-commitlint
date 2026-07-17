@@ -3,7 +3,7 @@ name: 🚀 Build & Publish
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   id-token: write
@@ -12,11 +12,16 @@ permissions:
 
 jobs:
   publish:
-    name: 📦 Validate & Publish
+    name: 📦 Validate, publish & deploy
     runs-on: ubuntu-latest
     steps:
       - name: 🗜️ Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 🔎 Verify tag targets master
+        run: test "$GITHUB_SHA" = "$(git rev-parse origin/master)"
 
       - name: 🗜️ Setup Node
         uses: actions/setup-node@v6
@@ -47,15 +52,23 @@ jobs:
       - name: 🧪 Smoke-test npm package
         run: yarn package:smoke
 
+      - name: 🔎 Verify artifact layout
+        run: |
+          test -f dist/portal/browser/index.html
+          test -x dist/quick-commitlint/bin/quick-commitlint
+          test -f dist/quick-commitlint/package.json
+
       - name: 🚀 Publish npm
         if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, 'beta') == false
-        run: cd dist && npm publish
+        working-directory: dist/quick-commitlint
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: 🚀 Publish npm beta
         if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, 'beta') == true
-        run: cd dist && npm publish --tag beta
+        working-directory: dist/quick-commitlint
+        run: npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
@@ -73,6 +86,23 @@ jobs:
 
       - name: 🚀 Publish GitHub Packages
         if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, 'beta') == false
-        run: cd dist && npm publish
+        working-directory: dist/quick-commitlint
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
+
+      - name: 📦 Build portal app
+        run: yarn portal:build:pages
+
+      - name: 🔎 Verify prerendered pages
+        run: yarn portal:ssg:verify
+
+      - name: 🛠️ Copy index.html to 404.html
+        run: cp ./dist/portal/browser/index.html ./dist/portal/browser/404.html
+
+      - name: 🚀 Deploy Github Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_branch: gh-pages
+          publish_dir: ./dist/portal/browser

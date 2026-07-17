@@ -4,14 +4,17 @@ import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 const root = resolve(__dirname, '..');
-const native = resolve(root, 'dist', 'bin', 'quick-commitlint');
+const native = resolve(root, 'dist', 'quick-commitlint', 'bin', 'quick-commitlint');
 const commitlint = resolve(root, 'node_modules', '@commitlint', 'cli', 'cli.js');
 const iterations = Number(process.env.BENCHMARK_ITERATIONS ?? 40);
 const temp = mkdtempSync(join(tmpdir(), 'quick-commitlint-benchmark-'));
 const messagePath = join(temp, 'COMMIT_EDITMSG');
 const configPath = join(temp, 'quick-commitlint.json');
 writeFileSync(messagePath, 'feat(benchmark): measure native startup\n');
-writeFileSync(configPath, '{"preset":"conventional","rules":{"header-max-length":[2,"always",100]}}\n');
+writeFileSync(
+  configPath,
+  '{"preset":"conventional","rules":{"header-max-length":[2,"always",100]}}\n',
+);
 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -22,7 +25,11 @@ function measure(command: string, args: string[], input?: string): number {
   const samples: number[] = [];
   for (let index = 0; index < iterations + 3; index += 1) {
     const start = process.hrtime.bigint();
-    const result = spawnSync(command, args, { cwd: root, input, stdio: ['pipe', 'ignore', 'ignore'] });
+    const result = spawnSync(command, args, {
+      cwd: root,
+      input,
+      stdio: ['pipe', 'ignore', 'ignore'],
+    });
     const elapsed = Number(process.hrtime.bigint() - start) / 1_000_000;
     if (result.status !== 0) throw new Error(`${command} exited with ${result.status}`);
     if (index >= 3) samples.push(elapsed);
@@ -33,11 +40,15 @@ function measure(command: string, args: string[], input?: string): number {
 try {
   const nativeFile = measure(native, [messagePath]);
   const nativeStdin = measure(native, [], 'feat(benchmark): measure native startup');
-  const nativeConfig = measure(native, ['--config', configPath], 'feat(benchmark): measure native startup');
+  const nativeConfig = measure(
+    native,
+    ['--config', configPath],
+    'feat(benchmark): measure native startup',
+  );
   const nodeStdin = measure(
     process.execPath,
     [commitlint, '--extends', '@commitlint/config-conventional'],
-    'feat(benchmark): measure native startup'
+    'feat(benchmark): measure native startup',
   );
   const ratio = nodeStdin / nativeStdin;
   console.log(`quick-commitlint file median: ${nativeFile.toFixed(3)} ms`);

@@ -1,0 +1,49 @@
+<mat-sidenav-container>
+  <mat-sidenav
+    #drawer
+    id="docs-navigation"
+    [mode]="isHandset() ? 'over' : 'side'"
+    [opened]="!isHandset()"
+    [fixedInViewport]="isHandset()"
+    [fixedTopGap]="64"
+  >
+    <nav aria-label="Documentation navigation">
+      <p class="nav-heading">Documentation</p>
+      <mat-nav-list>
+        @for (document of documents; track document.path) {
+          <a
+            mat-list-item
+            [routerLink]="['/docs', document.path]"
+            routerLinkActive
+            #activeLink="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [activated]="activeLink.isActive"
+            [attr.aria-current]="activeLink.isActive ? 'page' : null"
+            (click)="closeOnHandset(drawer)"
+          >
+            {{ document.label }}
+          </a>
+        }
+      </mat-nav-list>
+    </nav>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    @if (isHandset()) {
+      <div class="mobile-docs-bar">
+        <button
+          mat-stroked-button
+          type="button"
+          aria-controls="docs-navigation"
+          [attr.aria-expanded]="drawer.opened"
+          (click)="toggle(drawer)"
+        >
+          <span aria-hidden="true">☰</span>
+          Documentation menu
+        </button>
+      </div>
+    }
+
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,6 +1,6 @@
 name: 🧪 Test PR
 
-"on": pull_request
+'on': pull_request
 
 permissions:
   contents: read
@@ -67,6 +67,12 @@ jobs:
 
       - name: 🧪 Smoke-test npm package
         run: yarn package:smoke
+
+      - name: 🔎 Verify artifact layout
+        run: |
+          test -f dist/portal/browser/index.html
+          test -x dist/quick-commitlint/bin/quick-commitlint
+          test -f dist/quick-commitlint/package.json
 
       - name: 🏁 Benchmark performance gate
         run: yarn benchmark
