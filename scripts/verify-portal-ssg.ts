@@ -39,16 +39,37 @@ const pages: readonly ExpectedPage[] = [
     description: 'Use Quick Commitlint from standard input, files, and Git commit hooks.',
   },
   {
+    route: 'docs/message-format',
+    heading: 'Commit message format',
+    title: 'Commit message format | Quick Commitlint',
+    description:
+      'Understand the commit header, body, footer, and breaking-change syntax parsed by Quick Commitlint.',
+  },
+  {
     route: 'docs/configuration',
     heading: 'Configuration',
     title: 'Configuration | Quick Commitlint',
     description: 'Configure Quick Commitlint presets, rules, severities, and conditions.',
   },
   {
+    route: 'docs/presets',
+    heading: 'Presets',
+    title: 'Presets | Quick Commitlint',
+    description:
+      'Compare every Conventional and Angular preset rule, type, and default used by Quick Commitlint.',
+  },
+  {
     route: 'docs/rules',
     heading: 'Rules',
     title: 'Rules | Quick Commitlint',
     description: 'Reference the rules supported by Quick Commitlint and its built-in presets.',
+  },
+  {
+    route: 'docs/compatibility',
+    heading: 'Commitlint compatibility',
+    title: 'Commitlint compatibility | Quick Commitlint',
+    description:
+      'See which commitlint behavior Quick Commitlint supports and where the native CLI deliberately differs.',
   },
   {
     route: 'docs/cli',
@@ -81,8 +102,11 @@ function canonicalUrl(route: string): string {
 }
 
 async function main(): Promise<void> {
+  const renderedPages = new Map<string, string>();
+
   for (const page of pages) {
     const html = await readFile(pagePath(page.route), 'utf8');
+    renderedPages.set(page.route, html);
     const label = page.route || '/';
 
     assert.match(html, /<html[^>]+lang="en"/u, `${label} must declare English content`);
@@ -94,10 +118,43 @@ async function main(): Promise<void> {
     assert.ok(html.includes(`<title>${page.title}</title>`), `${label} must prerender its title`);
     assert.ok(html.includes(page.description), `${label} must prerender its description`);
     assert.ok(html.includes(canonicalUrl(page.route)), `${label} must prerender its canonical URL`);
+    assert.ok(!html.includes('href="../'), `${label} must not contain base-href-unsafe links`);
   }
 
-  for (const asset of ['robots.txt', 'sitemap.xml']) {
-    await readFile(path.join(outputDirectory, asset), 'utf8');
+  const ruleReference = renderedPages.get('docs/rules') ?? '';
+  for (const rule of [
+    'body-leading-blank',
+    'body-max-line-length',
+    'footer-leading-blank',
+    'footer-max-line-length',
+    'header-max-length',
+    'header-trim',
+    'scope-case',
+    'subject-case',
+    'subject-empty',
+    'subject-exclamation-mark',
+    'subject-full-stop',
+    'type-case',
+    'type-empty',
+    'type-enum',
+  ]) {
+    assert.ok(ruleReference.includes(rule), `rules reference must document ${rule}`);
+  }
+
+  const presetReference = renderedPages.get('docs/presets') ?? '';
+  assert.ok(
+    presetReference.includes('Conventional'),
+    'preset reference must document Conventional',
+  );
+  assert.ok(presetReference.includes('Angular'), 'preset reference must document Angular');
+
+  await readFile(path.join(outputDirectory, 'robots.txt'), 'utf8');
+  const sitemap = await readFile(path.join(outputDirectory, 'sitemap.xml'), 'utf8');
+  for (const page of pages.filter((page) => page.route !== 'docs' && page.route !== '404')) {
+    assert.ok(
+      sitemap.includes(canonicalUrl(page.route)),
+      `sitemap must contain ${canonicalUrl(page.route)}`,
+    );
   }
 
   console.log(`Verified ${pages.length} prerendered portal pages and SEO assets.`);

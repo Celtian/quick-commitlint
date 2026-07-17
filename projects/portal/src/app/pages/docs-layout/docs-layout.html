@@ -8,23 +8,25 @@
     [fixedTopGap]="64"
   >
     <nav aria-label="Documentation navigation">
-      <p class="nav-heading">Documentation</p>
-      <mat-nav-list>
-        @for (document of documents; track document.path) {
-          <a
-            mat-list-item
-            [routerLink]="['/docs', document.path]"
-            routerLinkActive
-            #activeLink="routerLinkActive"
-            [routerLinkActiveOptions]="{ exact: true }"
-            [activated]="activeLink.isActive"
-            [attr.aria-current]="activeLink.isActive ? 'page' : null"
-            (click)="closeOnHandset(drawer)"
-          >
-            {{ document.label }}
-          </a>
-        }
-      </mat-nav-list>
+      @for (group of documentGroups; track group) {
+        <p class="nav-heading">{{ group }}</p>
+        <mat-nav-list>
+          @for (document of documentsInGroup(group); track document.path) {
+            <a
+              mat-list-item
+              [routerLink]="['/docs', document.path]"
+              routerLinkActive
+              #activeLink="routerLinkActive"
+              [routerLinkActiveOptions]="{ exact: true }"
+              [activated]="activeLink.isActive"
+              [attr.aria-current]="activeLink.isActive ? 'page' : null"
+              (click)="closeOnHandset(drawer)"
+            >
+              {{ document.label }}
+            </a>
+          }
+        </mat-nav-list>
+      }
     </nav>
   </mat-sidenav>
 

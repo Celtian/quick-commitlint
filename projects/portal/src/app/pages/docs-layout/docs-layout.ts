@@ -6,7 +6,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { map } from 'rxjs';
-import { DOCUMENTS } from '../../docs/document-registry';
+import { DOCUMENT_GROUPS, DOCUMENTS, DocumentGroup } from '../../docs/document-registry';
 
 @Component({
   selector: 'app-docs-layout',
@@ -25,10 +25,15 @@ export class DocsLayout {
   private readonly breakpointObserver = inject(BreakpointObserver);
 
   protected readonly documents = DOCUMENTS;
+  protected readonly documentGroups = DOCUMENT_GROUPS;
   protected readonly isHandset = toSignal(
     this.breakpointObserver.observe('(max-width: 59.99rem)').pipe(map((result) => result.matches)),
     { initialValue: true },
   );
+
+  protected documentsInGroup(group: DocumentGroup) {
+    return this.documents.filter((document) => document.group === group);
+  }
 
   protected toggle(drawer: MatSidenav): void {
     void drawer.toggle();

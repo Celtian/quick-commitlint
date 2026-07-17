@@ -26,6 +26,19 @@ echo "feat(parser): add fast validation" | quick-commitlint
 
 A valid message exits with status `0`. Rule errors exit with status `1`; command, file, UTF-8, and configuration errors exit with status `2`.
 
+Quick Commitlint uses the `conventional` preset automatically. Add `.quick-commitlint.json` at the repository root to choose Angular or override individual rules:
+
+```json
+{
+  "preset": "angular",
+  "rules": {
+    "header-max-length": [2, "always", 80]
+  }
+}
+```
+
+Continue with [Usage](docs/usage/), review the accepted [commit message format](docs/message-format/), or compare the complete [preset defaults](docs/presets/).
+
 ## Platform support
 
 The current package supports Linux x86-64. Node and a package manager are only used to download the package; the command itself is a native executable.

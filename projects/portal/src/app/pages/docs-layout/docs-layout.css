@@ -20,8 +20,12 @@ mat-sidenav {
   color: var(--mat-sys-on-surface-variant);
   font: var(--mat-sys-label-large);
   letter-spacing: 0.06em;
-  margin: 0.5rem 1rem 0.75rem;
+  margin: 1.25rem 1rem 0.25rem;
   text-transform: uppercase;
+}
+
+.nav-heading:first-child {
+  margin-block-start: 0.5rem;
 }
 
 .mobile-docs-bar {

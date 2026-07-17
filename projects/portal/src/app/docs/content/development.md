@@ -35,3 +35,23 @@ yarn benchmark
 ```
 
 The documentation portal is an Angular 22 static site. Run it locally with `yarn portal:start` and validate it with `yarn portal:validate`.
+
+## Documentation architecture
+
+Documentation Markdown lives in `projects/portal/src/app/docs/content`. Each public document is registered once in the typed document registry; Angular uses that registry for routes, sidebar navigation, SEO metadata, and prerender routes.
+
+Markdown is imported as text during the build and rendered by `ngx-markdown`, so prerendered pages contain the article content without a runtime HTTP request. When adding a page, also extend the SSG expectations and `public/sitemap.xml`.
+
+## Release checks
+
+Packaging changes require the release build and smoke test in addition to normal validation:
+
+```bash
+yarn build:release
+yarn script:package-npm
+yarn copy-files
+yarn package:smoke
+git diff --check
+```
+
+The portal builds into `dist/portal`; the native npm package builds into `dist/quick-commitlint`.
