@@ -302,6 +302,51 @@ test "loads angular and applies overrides" {
     try std.testing.expectEqual(Severity.err, loaded.value.subject_exclamation_mark.severity);
 }
 
+test "loads every rule tuple shape and case value" {
+    var loaded = try parse(std.testing.allocator,
+        \\{"rules":{
+        \\  "body-leading-blank":[1,"never"],
+        \\  "body-max-line-length":[0],
+        \\  "footer-leading-blank":[0],
+        \\  "footer-max-line-length":[2,"always",80],
+        \\  "header-max-length":[2,"always",90],
+        \\  "header-trim":[2,"always"],
+        \\  "scope-case":[2,"always","upper-case"],
+        \\  "subject-case":[2,"never",["lower-case","upper-case","sentence-case","start-case","pascal-case"]],
+        \\  "subject-empty":[2,"never"],
+        \\  "subject-exclamation-mark":[2,"never"],
+        \\  "subject-full-stop":[2,"never","!"],
+        \\  "type-case":[2,"always","lower-case"],
+        \\  "type-empty":[2,"never"],
+        \\  "type-enum":[2,"always",["feat","fix"]]
+        \\}}
+    );
+    defer loaded.deinit();
+
+    try std.testing.expectEqual(Severity.warning, loaded.value.body_leading_blank.severity);
+    try std.testing.expectEqual(Condition.never, loaded.value.body_leading_blank.condition);
+    try std.testing.expectEqual(Severity.disabled, loaded.value.body_max_line_length.severity);
+    try std.testing.expectEqual(Severity.disabled, loaded.value.footer_leading_blank.severity);
+    try std.testing.expectEqual(@as(usize, 80), loaded.value.footer_max_line_length.value);
+    try std.testing.expectEqual(@as(usize, 90), loaded.value.header_max_length.value);
+    try std.testing.expectEqual(Case.upper, loaded.value.scope_case.values[0]);
+    try std.testing.expectEqualSlices(Case, &.{ .lower, .upper, .sentence, .start, .pascal }, loaded.value.subject_case.values);
+    try std.testing.expectEqualStrings("!", loaded.value.subject_full_stop.value);
+    try std.testing.expectEqual(Case.lower, loaded.value.type_case.values[0]);
+    try std.testing.expectEqualStrings("feat", loaded.value.type_enum.values[0]);
+    try std.testing.expectEqualStrings("fix", loaded.value.type_enum.values[1]);
+}
+
+test "loads disabled allocated rule tuples" {
+    var loaded = try parse(std.testing.allocator,
+        \\{"rules":{"scope-case":[0],"subject-case":[0],"type-enum":[0]}}
+    );
+    defer loaded.deinit();
+    try std.testing.expectEqual(Severity.disabled, loaded.value.scope_case.severity);
+    try std.testing.expectEqual(Severity.disabled, loaded.value.subject_case.severity);
+    try std.testing.expectEqual(Severity.disabled, loaded.value.type_enum.severity);
+}
+
 test "rejects unknown duplicate and malformed configuration" {
     try std.testing.expectError(error.UnknownField, parse(std.testing.allocator, "{\"unknown\":true}"));
     try std.testing.expectError(error.DuplicateField, parse(std.testing.allocator, "{\"preset\":\"angular\",\"preset\":\"conventional\"}"));
@@ -311,14 +356,46 @@ test "rejects unknown duplicate and malformed configuration" {
     try std.testing.expectError(error.DuplicateField, parse(std.testing.allocator, "{\"rules\":{\"type-empty\":[0],\"type-empty\":[2,\"never\"]}}"));
 }
 
+test "rejects every malformed rule tuple shape" {
+    const malformed = [_][]const u8{
+        "{\"rules\":{\"type-empty\":2}}",
+        "{\"rules\":{\"type-empty\":[\"error\",\"always\"]}}",
+        "{\"rules\":{\"type-empty\":[3,\"always\"]}}",
+        "{\"rules\":{\"type-empty\":[2]}}",
+        "{\"rules\":{\"header-max-length\":[0,\"always\"]}}",
+        "{\"rules\":{\"type-empty\":[2,2]}}",
+        "{\"rules\":{\"type-empty\":[2,\"sometimes\"]}}",
+        "{\"rules\":{\"header-max-length\":[2,\"always\",\"100\"]}}",
+        "{\"rules\":{\"subject-full-stop\":[2,\"never\",1]}}",
+        "{\"rules\":{\"subject-full-stop\":[2,\"never\",\"\"]}}",
+        "{\"rules\":{\"scope-case\":[2,\"always\",1]}}",
+        "{\"rules\":{\"scope-case\":[2,\"always\",\"camel-case\"]}}",
+        "{\"rules\":{\"scope-case\":[2,\"always\",[\"lower-case\"]]}}",
+        "{\"rules\":{\"subject-case\":[2,\"never\",[]]}}",
+        "{\"rules\":{\"subject-case\":[2,\"never\",[1]]}}",
+        "{\"rules\":{\"type-enum\":[2,\"always\",\"feat\"]}}",
+        "{\"rules\":{\"type-enum\":[2,\"always\",[]]}}",
+        "{\"rules\":{\"type-enum\":[2,\"always\",[1]]}}",
+        "{\"rules\":{\"type-enum\":[2,\"always\",[\"\"]]}}",
+    };
+    for (malformed) |source| {
+        try std.testing.expectError(error.InvalidRuleTuple, parse(std.testing.allocator, source));
+    }
+}
+
+fn fuzzParse(input: []const u8) void {
+    var loaded = parse(std.testing.allocator, input) catch return;
+    loaded.deinit();
+}
+
 test "fuzz strict configuration parser" {
+    fuzzParse("{}");
     try std.testing.fuzz({}, struct {
         fn testOne(_: void, smith: *std.testing.Smith) !void {
             var input: [255]u8 = undefined;
             const len = smith.value(u8);
             smith.bytes(input[0..len]);
-            var loaded = parse(std.testing.allocator, input[0..len]) catch return;
-            loaded.deinit();
+            fuzzParse(input[0..len]);
         }
     }.testOne, .{});
 }

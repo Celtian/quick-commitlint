@@ -41,7 +41,7 @@ Sleep 500ms
 Type "cat COMMIT_EDITMSG"
 Enter
 Sleep 750ms
-Type "quick-commitlint COMMIT_EDITMSG && echo valid-commit"
+Type "quick-commitlint COMMIT_EDITMSG"
 Enter
 Sleep 3s
 

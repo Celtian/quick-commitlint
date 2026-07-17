@@ -14,24 +14,44 @@ function expectStatus(actual: number | null, expected: number, context: string):
   if (actual !== expected) throw new Error(`${context}: expected status ${expected}, received ${actual}`);
 }
 
+function expectTimedSummary(output: string, context: string): void {
+  if (!/\d+\.\d{2} ms/.test(output)) throw new Error(`${context}: missing two-decimal timing.`);
+}
+
 try {
   const valid = run([], 'feat: add parser');
   expectStatus(valid.status, 0, 'valid stdin');
-  if (valid.stdout !== '' || valid.stderr !== '') throw new Error('Successful lint must be silent.');
-
-  const invalid = run([], 'wat: Add parser.');
-  expectStatus(invalid.status, 1, 'invalid stdin');
-  if (!String(invalid.stderr).includes('error[type-enum]')) throw new Error('Missing type-enum diagnostic.');
-  if (!String(invalid.stderr).includes('\x1b[31merror[type-enum]\x1b[0m')) {
-    throw new Error('Error diagnostic is not red.');
+  if (valid.stdout !== '') throw new Error('Lint results must be written to stderr.');
+  const validOutput = String(valid.stderr);
+  if (!validOutput.includes('\x1b[32m✔\x1b[0m')) throw new Error('Valid summary is not green.');
+  if (!validOutput.includes('0 errors') || !validOutput.includes('0 warnings')) {
+    throw new Error('Valid summary has incorrect counts.');
   }
+  expectTimedSummary(validOutput, 'valid summary');
+
+  const invalid = run([], 'wat: some message');
+  expectStatus(invalid.status, 1, 'invalid stdin');
+  if (invalid.stdout !== '') throw new Error('Lint results must be written to stderr.');
+  const invalidOutput = String(invalid.stderr);
+  if (!invalidOutput.includes('\x1b[31m✖\x1b[0m')) throw new Error('Error symbol is not red.');
+  if (!invalidOutput.includes('\x1b[36m[type-enum]\x1b[0m')) throw new Error('Rule identifier is not cyan.');
+  if (!invalidOutput.includes('1 error') || invalidOutput.includes('1 errors')) {
+    throw new Error('Error summary has incorrect singularization.');
+  }
+  expectTimedSummary(invalidOutput, 'error summary');
 
   const warning = run([], 'feat: add parser\nbody without blank');
   expectStatus(warning.status, 0, 'warning-only stdin');
-  if (!String(warning.stderr).includes('warning[body-leading-blank]')) throw new Error('Missing warning.');
-  if (!String(warning.stderr).includes('\x1b[33mwarning[body-leading-blank]\x1b[0m')) {
-    throw new Error('Warning diagnostic is not yellow.');
+  if (warning.stdout !== '') throw new Error('Lint results must be written to stderr.');
+  const warningOutput = String(warning.stderr);
+  if (!warningOutput.includes('\x1b[33m⚠\x1b[0m')) throw new Error('Warning symbol is not yellow.');
+  if (!warningOutput.includes('\x1b[36m[body-leading-blank]\x1b[0m')) {
+    throw new Error('Warning rule identifier is not cyan.');
   }
+  if (!warningOutput.includes('1 warning') || warningOutput.includes('1 warnings')) {
+    throw new Error('Warning summary has incorrect singularization.');
+  }
+  expectTimedSummary(warningOutput, 'warning summary');
 
   const messagePath = join(temp, 'COMMIT_EDITMSG');
   writeFileSync(messagePath, 'fix(core): handle CRLF\r\n\r\nbody\r\n');

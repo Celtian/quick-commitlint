@@ -5,7 +5,10 @@ const quick = @import("quick_commitlint");
 const color = struct {
     const reset = "\x1b[0m";
     const red = "\x1b[31m";
+    const green = "\x1b[32m";
     const yellow = "\x1b[33m";
+    const cyan = "\x1b[36m";
+    const dim_cyan = "\x1b[2;36m";
 };
 
 const message_limit = 1024 * 1024;
@@ -37,6 +40,7 @@ pub fn main(init: std.process.Init) !void {
 }
 
 fn execute(init: std.process.Init, options: cli.Options) !void {
+    const started: std.Io.Clock.Timestamp = .now(init.io, .awake);
     const message = if (options.message_path) |path|
         try readFileAlloc(init.gpa, init.io, path, message_limit)
     else
@@ -59,27 +63,44 @@ fn execute(init: std.process.Init, options: cli.Options) !void {
 
     const rules = if (loaded) |*value| value.value else quick.config.conventional();
     const report = try quick.linting.lint(message, rules);
-    if (report.len == 0) return;
+    const elapsed = started.untilNow(init.io);
+    const elapsed_ms = @as(f64, @floatFromInt(elapsed.raw.nanoseconds)) / std.time.ns_per_ms;
 
     var buffer: [4096]u8 = undefined;
     var writer = std.Io.File.stderr().writer(init.io, &buffer);
     for (report.issues()) |issue| {
-        const level = if (issue.severity == .err) "error" else "warning";
-        const level_color = if (issue.severity == .err) color.red else color.yellow;
-        try writer.interface.print("{s}{s}[{s}]{s}: {s}\n", .{
-            level_color,
-            level,
-            issue.rule.name(),
+        const symbol = if (issue.severity == .err) "✖" else "⚠";
+        const symbol_color = if (issue.severity == .err) color.red else color.yellow;
+        try writer.interface.print("  {s}{s}{s}  {s}  {s}[{s}]{s}\n", .{
+            symbol_color,
+            symbol,
             color.reset,
             issue.message,
+            color.cyan,
+            issue.rule.name(),
+            color.reset,
         });
     }
-    try writer.interface.print("{s}{d} error(s){s}, {s}{d} warning(s){s}\n", .{
+
+    if (report.len > 0) try writer.interface.writeByte('\n');
+    const summary_symbol = if (report.errors > 0) "✖" else if (report.warnings > 0) "⚠" else "✔";
+    const summary_color = if (report.errors > 0) color.red else if (report.warnings > 0) color.yellow else color.green;
+    const error_suffix = if (report.errors == 1) "" else "s";
+    const warning_suffix = if (report.warnings == 1) "" else "s";
+    try writer.interface.print("  {s}{s}{s}  {s}{d} error{s}{s} · {s}{d} warning{s}{s} · {s}{d:.2} ms{s}\n", .{
+        summary_color,
+        summary_symbol,
+        color.reset,
         color.red,
         report.errors,
+        error_suffix,
         color.reset,
         color.yellow,
         report.warnings,
+        warning_suffix,
+        color.reset,
+        color.dim_cyan,
+        elapsed_ms,
         color.reset,
     });
     try writer.interface.flush();
