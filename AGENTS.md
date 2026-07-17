@@ -4,7 +4,7 @@
 
 - Use Zig 0.16.0, Node.js 24, and Yarn 1.22.22.
 - Node is used for development and publishing only; the published command must execute the Zig binary directly.
-- Keep version `0.0.1` synchronized in `package.json`, `build.zig.zon`, `src/version.zig`, tests, and documentation until a release change is explicitly requested.
+- Treat `package.json` as the sole source of truth for the release version. Keep `build.zig.zon` at the neutral `0.0.0` placeholder and derive build/test/package expectations from `package.json`.
 - Never change the `build.zig.zon` fingerprint.
 
 ## Required validation

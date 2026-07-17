@@ -3,12 +3,27 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+    const package_json = std.Io.Dir.cwd().readFileAlloc(
+        b.graph.io,
+        "package.json",
+        b.allocator,
+        .limited(64 * 1024),
+    ) catch @panic("failed to read package.json");
+    const package = std.json.parseFromSliceLeaky(
+        struct { version: []const u8 },
+        b.allocator,
+        package_json,
+        .{ .ignore_unknown_fields = true },
+    ) catch @panic("failed to parse package.json");
+    const build_options = b.addOptions();
+    build_options.addOption([]const u8, "version", package.version);
 
     const lib = b.addModule("quick_commitlint", .{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
     });
+    lib.addOptions("build_options", build_options);
     const cli = b.createModule(.{
         .root_source_file = b.path("src/cli.zig"),
         .target = target,

@@ -1,9 +1,10 @@
 import { spawnSync } from 'child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 const native = resolve(__dirname, '..', 'zig-out', 'bin', 'quick-commitlint');
+const expectedVersion = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf8')).version;
 const temp = mkdtempSync(join(tmpdir(), 'quick-commitlint-integration-'));
 
 function run(args: string[], input?: string | Buffer, cwd = temp) {
@@ -86,7 +87,9 @@ try {
 
   const version = run(['--version']);
   expectStatus(version.status, 0, 'version');
-  if (String(version.stdout).trim() !== 'quick-commitlint 0.0.1') throw new Error('Incorrect version output.');
+  if (String(version.stdout).trim() !== `quick-commitlint ${expectedVersion}`) {
+    throw new Error('Incorrect version output.');
+  }
 
   const help = run(['--help']);
   expectStatus(help.status, 0, 'help');
