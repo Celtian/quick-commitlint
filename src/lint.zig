@@ -365,6 +365,11 @@ test "disabled and never overrides work" {
     try std.testing.expectEqual(Rule.header_trim, report.issues()[0].rule);
 }
 
+test "start case rejects a lowercase word after a separator" {
+    try std.testing.expect(!matchesCase("Some message", .start));
+    try std.testing.expect(!matchesCase("123", .start));
+}
+
 fn expectOnlyRule(message: []const u8, rules: config.Config, expected: Rule) !void {
     const report = try lint(message, rules);
     try std.testing.expectEqual(@as(usize, 1), report.len);
@@ -430,16 +435,22 @@ test "every supported rule can produce a finding" {
     try expectOnlyRule("fix: subject", rules, .type_enum);
 }
 
+fn fuzzLint(input: []const u8) !void {
+    _ = lint(input, config.conventional()) catch |err| switch (err) {
+        error.InvalidUtf8 => return,
+        else => return err,
+    };
+}
+
 test "fuzz message parser" {
+    try fuzzLint("feat: valid");
+    try fuzzLint("feat: \xff");
     try std.testing.fuzz({}, struct {
         fn testOne(_: void, smith: *std.testing.Smith) !void {
             var input: [255]u8 = undefined;
             const len = smith.value(u8);
             smith.bytes(input[0..len]);
-            _ = lint(input[0..len], config.conventional()) catch |err| switch (err) {
-                error.InvalidUtf8 => return,
-                else => return err,
-            };
+            try fuzzLint(input[0..len]);
         }
     }.testOne, .{});
 }
