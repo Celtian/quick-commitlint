@@ -22,10 +22,16 @@ try {
   const invalid = run([], 'wat: Add parser.');
   expectStatus(invalid.status, 1, 'invalid stdin');
   if (!String(invalid.stderr).includes('error[type-enum]')) throw new Error('Missing type-enum diagnostic.');
+  if (!String(invalid.stderr).includes('\x1b[31merror[type-enum]\x1b[0m')) {
+    throw new Error('Error diagnostic is not red.');
+  }
 
   const warning = run([], 'feat: add parser\nbody without blank');
   expectStatus(warning.status, 0, 'warning-only stdin');
   if (!String(warning.stderr).includes('warning[body-leading-blank]')) throw new Error('Missing warning.');
+  if (!String(warning.stderr).includes('\x1b[33mwarning[body-leading-blank]\x1b[0m')) {
+    throw new Error('Warning diagnostic is not yellow.');
+  }
 
   const messagePath = join(temp, 'COMMIT_EDITMSG');
   writeFileSync(messagePath, 'fix(core): handle CRLF\r\n\r\nbody\r\n');
@@ -46,7 +52,9 @@ try {
   expectStatus(run(['--config', malformed], 'feat: parser').status, 2, 'unknown config key');
 
   expectStatus(run([], Buffer.from([0x66, 0x65, 0x61, 0x74, 0x3a, 0x20, 0xff])).status, 2, 'invalid UTF-8');
-  expectStatus(run(['--unknown']).status, 2, 'unknown CLI option');
+  const unknown = run(['--unknown']);
+  expectStatus(unknown.status, 2, 'unknown CLI option');
+  if (!String(unknown.stderr).includes('\x1b[31merror\x1b[0m')) throw new Error('CLI error is not red.');
 
   const oversized = join(temp, 'oversized-message');
   writeFileSync(oversized, Buffer.alloc(1024 * 1024 + 1, 0x61));
@@ -59,6 +67,12 @@ try {
   const version = run(['--version']);
   expectStatus(version.status, 0, 'version');
   if (String(version.stdout).trim() !== 'quick-commitlint 0.0.1') throw new Error('Incorrect version output.');
+
+  const help = run(['--help']);
+  expectStatus(help.status, 0, 'help');
+  if (!String(help.stdout).includes('\x1b[96mQuick Commitlint\x1b[0m')) throw new Error('Help title is not cyan.');
+  if (!String(help.stdout).includes('\x1b[33mUsage:\x1b[0m')) throw new Error('Help section is not yellow.');
+  if (!String(help.stdout).includes('\x1b[32m-c, --config <path>\x1b[0m')) throw new Error('Help option is not green.');
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }

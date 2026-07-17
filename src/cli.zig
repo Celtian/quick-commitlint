@@ -1,5 +1,13 @@
 const std = @import("std");
 
+const color = struct {
+    const reset = "\x1b[0m";
+    const red = "\x1b[31m";
+    const green = "\x1b[32m";
+    const yellow = "\x1b[33m";
+    const bright_cyan = "\x1b[96m";
+};
+
 pub const Options = struct {
     config_path: ?[]const u8 = null,
     message_path: ?[]const u8 = null,
@@ -49,27 +57,27 @@ pub fn parse(args: anytype) Action {
 
 pub fn writeHelp(writer: anytype) !void {
     try writer.writeAll(
-        \\Quick Commitlint
-        \\
-        \\Usage:
-        \\  quick-commitlint [options] [commit-message-file]
-        \\
-        \\When no commit-message-file is provided, the message is read from stdin.
-        \\
-        \\Options:
-        \\  -c, --config <path>  Use an explicit JSON configuration file.
-        \\  -h, --help           Display usage information.
-        \\  -V, --version        Display the installed version.
-        \\
+        "\n" ++ color.bright_cyan ++ "Quick Commitlint" ++ color.reset ++
+            "\n\n" ++ color.yellow ++ "Usage:" ++ color.reset ++
+            "\n  quick-commitlint [options] [commit-message-file]" ++
+            "\n\nWhen no commit-message-file is provided, the message is read from stdin." ++
+            "\n\n" ++ color.yellow ++ "Options:" ++ color.reset ++
+            "\n  " ++ color.green ++ "-c, --config <path>" ++ color.reset ++
+            "  Use an explicit JSON configuration file." ++
+            "\n  " ++ color.green ++ "-h, --help" ++ color.reset ++
+            "           Display usage information." ++
+            "\n  " ++ color.green ++ "-V, --version" ++ color.reset ++
+            "        Display the installed version." ++
+            "\n\n",
     );
 }
 
 pub fn writeInvalidArgument(writer: anytype, invalid: InvalidArgument) !void {
     switch (invalid) {
-        .unknown => |arg| try writer.print("error: unknown argument '{s}'\n", .{arg}),
-        .missing_value => |arg| try writer.print("error: option '{s}' requires a value\n", .{arg}),
-        .duplicate_config => try writer.writeAll("error: --config may only be specified once\n"),
-        .multiple_inputs => try writer.writeAll("error: only one commit-message-file may be specified\n"),
+        .unknown => |arg| try writer.print(color.red ++ "error" ++ color.reset ++ ": unknown argument '{s}'\n", .{arg}),
+        .missing_value => |arg| try writer.print(color.red ++ "error" ++ color.reset ++ ": option '{s}' requires a value\n", .{arg}),
+        .duplicate_config => try writer.writeAll(color.red ++ "error" ++ color.reset ++ ": --config may only be specified once\n"),
+        .multiple_inputs => try writer.writeAll(color.red ++ "error" ++ color.reset ++ ": only one commit-message-file may be specified\n"),
     }
 }
 
@@ -117,12 +125,14 @@ test "double dash permits a path beginning with dash" {
     try std.testing.expectEqualStrings("-message", parseTest(&.{ "--", "-message" }).lint.message_path.?);
 }
 
-test "help is plain and documents the interface" {
+test "help is colored and documents the interface" {
     var output: std.Io.Writer.Allocating = .init(std.testing.allocator);
     defer output.deinit();
     try writeHelp(&output.writer);
     const text = output.writer.buffered();
     try std.testing.expect(std.mem.indexOf(u8, text, "quick-commitlint") != null);
     try std.testing.expect(std.mem.indexOf(u8, text, "--config") != null);
-    try std.testing.expect(std.mem.indexOf(u8, text, "\x1b") == null);
+    try std.testing.expect(std.mem.indexOf(u8, text, color.bright_cyan) != null);
+    try std.testing.expect(std.mem.indexOf(u8, text, color.yellow) != null);
+    try std.testing.expect(std.mem.indexOf(u8, text, color.green) != null);
 }

@@ -4,6 +4,11 @@ name: 🧪 Test PR
 
 permissions:
   contents: read
+  pull-requests: write
+
+env:
+  # kcov/kcov:latest, pinned for reproducible builds
+  KCOV_IMAGE: kcov/kcov@sha256:481289ae32e55e5b733019515acd10948a4f76dfed381765577db909664fc603
 
 jobs:
   test:
@@ -32,6 +37,27 @@ jobs:
 
       - name: ✅ Validate
         run: yarn validate
+
+      - name: 🛠️ Build coverage tests
+        run: yarn coverage:build
+
+      - name: 🧪 Generate coverage
+        run: |
+          docker run --rm \
+            --cap-add=SYS_PTRACE \
+            --security-opt seccomp=unconfined \
+            --volume "$PWD:$PWD" \
+            --workdir "$PWD" \
+            --user "$(id -u):$(id -g)" \
+            --entrypoint /bin/sh \
+            "$KCOV_IMAGE" \
+            "$PWD/scripts/coverage.sh"
+
+      - name: 📊 Report coverage
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: ./.github/actions/report-pr
+        with:
+          coverage-file: coverage/merged/kcov-merged/cobertura.xml
 
       - name: ⚡ Build release executable
         run: yarn build:release

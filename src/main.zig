@@ -2,6 +2,12 @@ const std = @import("std");
 const cli = @import("cli");
 const quick = @import("quick_commitlint");
 
+const color = struct {
+    const reset = "\x1b[0m";
+    const red = "\x1b[31m";
+    const yellow = "\x1b[33m";
+};
+
 const message_limit = 1024 * 1024;
 const config_limit = 256 * 1024;
 const config_name = ".quick-commitlint.json";
@@ -23,7 +29,7 @@ pub fn main(init: std.process.Init) !void {
         .lint => |options| execute(init, options) catch |err| {
             var buffer: [4096]u8 = undefined;
             var writer = std.Io.File.stderr().writer(init.io, &buffer);
-            try writer.interface.print("error: {s}\n", .{@errorName(err)});
+            try writer.interface.print(color.red ++ "error" ++ color.reset ++ ": {s}\n", .{@errorName(err)});
             try writer.interface.flush();
             std.process.exit(2);
         },
@@ -59,9 +65,23 @@ fn execute(init: std.process.Init, options: cli.Options) !void {
     var writer = std.Io.File.stderr().writer(init.io, &buffer);
     for (report.issues()) |issue| {
         const level = if (issue.severity == .err) "error" else "warning";
-        try writer.interface.print("{s}[{s}]: {s}\n", .{ level, issue.rule.name(), issue.message });
+        const level_color = if (issue.severity == .err) color.red else color.yellow;
+        try writer.interface.print("{s}{s}[{s}]{s}: {s}\n", .{
+            level_color,
+            level,
+            issue.rule.name(),
+            color.reset,
+            issue.message,
+        });
     }
-    try writer.interface.print("{d} error(s), {d} warning(s)\n", .{ report.errors, report.warnings });
+    try writer.interface.print("{s}{d} error(s){s}, {s}{d} warning(s){s}\n", .{
+        color.red,
+        report.errors,
+        color.reset,
+        color.yellow,
+        report.warnings,
+        color.reset,
+    });
     try writer.interface.flush();
     if (report.errors > 0) std.process.exit(1);
 }

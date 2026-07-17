@@ -44,6 +44,27 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&b.addRunArtifact(lib_tests).step);
     test_step.dependOn(&b.addRunArtifact(cli_tests).step);
 
+    const lib_coverage_tests = b.addTest(.{
+        .name = "root-coverage",
+        .root_module = lib,
+        .use_llvm = true,
+    });
+    const cli_coverage_tests = b.addTest(.{
+        .name = "cli-coverage",
+        .root_module = cli,
+        .use_llvm = true,
+    });
+    const install_lib_coverage_tests = b.addInstallArtifact(lib_coverage_tests, .{
+        .dest_dir = .{ .override = .{ .custom = "coverage-tests" } },
+    });
+    const install_cli_coverage_tests = b.addInstallArtifact(cli_coverage_tests, .{
+        .dest_dir = .{ .override = .{ .custom = "coverage-tests" } },
+    });
+
+    const coverage_step = b.step("coverage", "Build test executables for code coverage");
+    coverage_step.dependOn(&install_lib_coverage_tests.step);
+    coverage_step.dependOn(&install_cli_coverage_tests.step);
+
     const fuzz_tests = b.addTest(.{
         .name = "quick-commitlint-fuzz",
         .root_module = lib,

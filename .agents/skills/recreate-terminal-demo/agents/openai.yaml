@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recreate Terminal Demo"
+  short_description: "Render and verify the README terminal GIF"
+  default_prompt: "Use $recreate-terminal-demo to regenerate and validate the README terminal demo GIF."
