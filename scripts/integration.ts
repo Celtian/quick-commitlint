@@ -19,6 +19,18 @@ function expectTimedSummary(output: string, context: string): void {
   if (!/\d+\.\d{2} ms/.test(output)) throw new Error(`${context}: missing two-decimal timing.`);
 }
 
+function expectReportSpacing(output: string, context: string, hasIssues: boolean): void {
+  if (!output.startsWith('\n  ') || output.startsWith('\n\n')) {
+    throw new Error(`${context}: expected exactly one leading blank line.`);
+  }
+  if (!output.endsWith('\n\n') || output.endsWith('\n\n\n')) {
+    throw new Error(`${context}: expected exactly one trailing blank line.`);
+  }
+  if (hasIssues && !output.includes(']\x1b[0m\n\n  ')) {
+    throw new Error(`${context}: missing blank line between issues and summary.`);
+  }
+}
+
 try {
   const valid = run([], 'feat: add parser');
   expectStatus(valid.status, 0, 'valid stdin');
@@ -29,6 +41,7 @@ try {
     throw new Error('Valid summary has incorrect counts.');
   }
   expectTimedSummary(validOutput, 'valid summary');
+  expectReportSpacing(validOutput, 'valid report', false);
 
   const invalid = run([], 'wat: some message');
   expectStatus(invalid.status, 1, 'invalid stdin');
@@ -40,6 +53,7 @@ try {
     throw new Error('Error summary has incorrect singularization.');
   }
   expectTimedSummary(invalidOutput, 'error summary');
+  expectReportSpacing(invalidOutput, 'error report', true);
 
   const warning = run([], 'feat: add parser\nbody without blank');
   expectStatus(warning.status, 0, 'warning-only stdin');
@@ -53,6 +67,7 @@ try {
     throw new Error('Warning summary has incorrect singularization.');
   }
   expectTimedSummary(warningOutput, 'warning summary');
+  expectReportSpacing(warningOutput, 'warning report', true);
 
   const messagePath = join(temp, 'COMMIT_EDITMSG');
   writeFileSync(messagePath, 'fix(core): handle CRLF\r\n\r\nbody\r\n');

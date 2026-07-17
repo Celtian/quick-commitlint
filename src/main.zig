@@ -68,6 +68,7 @@ fn execute(init: std.process.Init, options: cli.Options) !void {
 
     var buffer: [4096]u8 = undefined;
     var writer = std.Io.File.stderr().writer(init.io, &buffer);
+    try writer.interface.writeByte('\n');
     for (report.issues()) |issue| {
         const symbol = if (issue.severity == .err) "✖" else "⚠";
         const symbol_color = if (issue.severity == .err) color.red else color.yellow;
@@ -87,7 +88,7 @@ fn execute(init: std.process.Init, options: cli.Options) !void {
     const summary_color = if (report.errors > 0) color.red else if (report.warnings > 0) color.yellow else color.green;
     const error_suffix = if (report.errors == 1) "" else "s";
     const warning_suffix = if (report.warnings == 1) "" else "s";
-    try writer.interface.print("  {s}{s}{s}  {s}{d} error{s}{s} · {s}{d} warning{s}{s} · {s}{d:.2} ms{s}\n", .{
+    try writer.interface.print("  {s}{s}{s}  {s}{d} error{s}{s} · {s}{d} warning{s}{s} · {s}{d:.2} ms{s}\n\n", .{
         summary_color,
         summary_symbol,
         color.reset,
