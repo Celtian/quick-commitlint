@@ -1,0 +1,29 @@
+name: Get & Cache Dependencies
+description: Install Yarn dependencies and cache node_modules
+inputs:
+  caching:
+    description: Whether to cache dependencies
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Cache dependencies
+      if: inputs.caching == 'true'
+      id: cache
+      uses: actions/cache@v6
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install
+      if: steps.cache.outputs.cache-hit != 'true' || inputs.caching != 'true'
+      run: yarn install --frozen-lockfile
+      shell: bash
+
+    - name: Restore lifecycle setup
+      if: steps.cache.outputs.cache-hit == 'true' && inputs.caching == 'true'
+      run: yarn prepare
+      shell: bash
