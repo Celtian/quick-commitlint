@@ -16,6 +16,8 @@ package-lock.json
 # Editors and operating systems
 .idea/
 .vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
 !.vscode/settings.json
 !.vscode/tasks.json
 *.swp

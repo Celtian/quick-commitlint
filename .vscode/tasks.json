@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "zig",
+      "args": ["build"],
+      "problemMatcher": ["$zig"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "zig",
+      "args": ["build", "run"],
+      "problemMatcher": ["$zig"],
+      "group": "none"
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "zig",
+      "args": ["build", "test"],
+      "problemMatcher": ["$zig"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "yarn",
+      "args": ["clean"],
+      "problemMatcher": []
+    }
+  ]
+}

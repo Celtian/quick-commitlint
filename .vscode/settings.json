@@ -1,0 +1,16 @@
+{
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#d21919",
+    "statusBar.foreground": "#ffffff"
+  },
+  "zig.path": "zig",
+  "zig.zls.path": "zls",
+  "editor.formatOnSave": true,
+  "[zig]": {
+    "editor.defaultFormatter": "ziglang.vscode-zig",
+    "editor.formatOnSave": true
+  },
+  "files.associations": {
+    "*.zon": "zig"
+  }
+}
