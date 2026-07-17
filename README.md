@@ -54,7 +54,7 @@ Or lint a message from standard input:
 echo "feat(parser): add fast validation" | quick-commitlint
 ```
 
-Valid messages produce no output and exit with status `0`. Rule errors exit with status `1`; command, file, UTF-8, and configuration errors exit with status `2`. Warnings are printed but do not fail the hook.
+Every lint result includes the elapsed lint time in milliseconds. Valid messages and warning-only results exit with status `0`; rule errors exit with status `1`; command, file, UTF-8, and configuration errors exit with status `2`.
 
 ## ⚙️ Configuration
 
