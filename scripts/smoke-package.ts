@@ -5,9 +5,13 @@ import { join, resolve } from 'path';
 
 const projectRoot = resolve(__dirname, '..');
 const distDir = join(projectRoot, 'dist');
+const projectManifest = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8'));
 const manifest = JSON.parse(readFileSync(join(distDir, 'package.json'), 'utf8'));
+const expectedVersion = projectManifest.version;
 
-if (manifest.version !== '0.0.1') throw new Error('Packaged version is not 0.0.1.');
+if (manifest.version !== expectedVersion) {
+  throw new Error(`Packaged version ${manifest.version} does not match ${expectedVersion}.`);
+}
 if (manifest.bin?.['quick-commitlint'] !== 'bin/quick-commitlint') {
   throw new Error('Packaged bin does not point directly to the native executable.');
 }
@@ -36,7 +40,7 @@ try {
   });
   const executable = join(installDir, 'node_modules', '.bin', 'quick-commitlint');
   const version = execFileSync(executable, ['--version'], { encoding: 'utf8' }).trim();
-  if (version !== 'quick-commitlint 0.0.1') throw new Error(`Unexpected version: ${version}`);
+  if (version !== `quick-commitlint ${expectedVersion}`) throw new Error(`Unexpected version: ${version}`);
 } finally {
   rmSync(tarball, { force: true });
   rmSync(installDir, { recursive: true, force: true });

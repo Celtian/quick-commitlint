@@ -1,12 +1,13 @@
 .{
     .name = .quick_commitlint,
-    .version = "0.0.1",
+    .version = "0.0.0",
     .fingerprint = 0x2a96102bdeea7bbc,
     .minimum_zig_version = "0.16.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",
         "build.zig.zon",
+        "package.json",
         "src",
         "LICENSE",
         "README.md",

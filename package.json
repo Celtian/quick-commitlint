@@ -11,7 +11,7 @@
   "description": "A very fast native commit message linter built with Zig",
   "scripts": {
     "validate": "yarn format:check && yarn typecheck:scripts && yarn build && yarn test && yarn test:integration && yarn test:differential",
-    "format:check": "zig fmt --check src/root.zig src/main.zig src/cli.zig src/config.zig src/lint.zig src/version.zig build.zig",
+    "format:check": "zig fmt --check src/root.zig src/main.zig src/cli.zig src/config.zig src/lint.zig build.zig",
     "typecheck:scripts": "tsc --project scripts/tsconfig.json",
     "build": "zig build",
     "build:release": "zig build -Doptimize=ReleaseFast -Dtarget=x86_64-linux -Dcpu=baseline",
