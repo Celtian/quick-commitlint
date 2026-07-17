@@ -1,6 +1,6 @@
 <div align="center">
 
-# Quick Commitlint
+# ⚡ Quick Commitlint
 
 **A very fast, dependency-free commit message linter built with Zig.**
 
@@ -8,11 +8,27 @@
 [![Zig 0.16.0](https://img.shields.io/badge/Zig-0.16.0-F7A41D?logo=zig&logoColor=white)](https://ziglang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+<img
+  src="https://raw.githubusercontent.com/Celtian/quick-commitlint/master/docs/assets/terminal-demo.gif"
+  alt="Quick Commitlint terminal demo"
+  width="900"
+/>
+
 </div>
 
 `quick-commitlint` checks Conventional Commit messages with a native Linux x86-64 executable. Node and Yarn are used to distribute the package, but the installed command starts the Zig binary directly and has no runtime dependencies.
 
-## Install
+## ✨ Why use it?
+
+| Feature | Details |
+| --- | --- |
+| ⚡ **Fast native executable** | Starts in about one millisecond without loading a JavaScript runtime. |
+| 📦 **Zero runtime dependencies** | npm installs a standalone, statically linked Zig binary. |
+| 🧩 **Familiar configuration** | Uses commitlint-style rule tuples with built-in conventional and Angular presets. |
+| 🔒 **Strict and predictable** | Rejects malformed JSON, unknown options, duplicate keys, and invalid UTF-8. |
+| 🌍 **International subjects** | Counts Unicode code points while keeping syntax checks fast and ASCII-based. |
+
+## 🚀 Install
 
 ```bash
 npm install quick-commitlint --save-dev
@@ -24,7 +40,7 @@ yarn add quick-commitlint --dev
 
 The initial release supports Linux x86-64 only.
 
-## Use in a commit hook
+## 🪝 Use in a commit hook
 
 Pass the commit-message file as the only positional argument:
 
@@ -40,7 +56,7 @@ echo "feat(parser): add fast validation" | quick-commitlint
 
 Valid messages produce no output and exit with status `0`. Rule errors exit with status `1`; command, file, UTF-8, and configuration errors exit with status `2`. Warnings are printed but do not fail the hook.
 
-## Configuration
+## ⚙️ Configuration
 
 Without configuration, the built-in `conventional` preset is used. Quick Commitlint searches for the nearest `.quick-commitlint.json` from the current directory upward. Use `--config` to select a file explicitly.
 
@@ -56,7 +72,7 @@ Without configuration, the built-in `conventional` preset is used. Quick Commitl
 
 Configuration is strict JSON. Unknown keys, duplicate keys, unsupported rules, and invalid values are errors. Supported severities are `0` (disabled), `1` (warning), and `2` (error); conditions are `always` and `never`.
 
-### Presets and rules
+### 🧰 Presets and rules
 
 The `conventional` and `angular` presets model the corresponding commitlint 21.2 presets. The supported rule union is:
 
@@ -69,7 +85,7 @@ The `conventional` and `angular` presets model the corresponding commitlint 21.2
 
 Unlike commitlint, generated messages such as merges, reverts, fixups, tags, and initial commits are not ignored.
 
-## CLI
+## 🧭 CLI
 
 ```text
 quick-commitlint [options] [commit-message-file]
@@ -81,7 +97,7 @@ quick-commitlint [options] [commit-message-file]
 
 Input must be UTF-8 and may use LF or CRLF line endings. Length rules count Unicode code points. Case rules use ASCII semantics so international subjects remain valid.
 
-## Development
+## 🏗️ Development
 
 Requirements:
 
@@ -111,7 +127,21 @@ Run the cold-process benchmark against `@commitlint/cli`:
 yarn benchmark
 ```
 
-## License
+<details>
+<summary><strong>🎬 Regenerate the terminal demo</strong></summary>
+
+The README animation is defined in `docs/terminal-demo.tape` and rendered with the official VHS Docker image:
+
+```bash
+yarn build:release
+yarn demo:render
+```
+
+The render script validates the GIF type and size, then extracts representative frames for visual inspection.
+
+</details>
+
+## 📄 License
 
 Copyright &copy; 2026 [Dominik Hladík](https://github.com/Celtian).
 

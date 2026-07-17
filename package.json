@@ -26,6 +26,7 @@
     "script:package-github": "tsx ./scripts/package-github.ts",
     "package:smoke": "tsx ./scripts/smoke-package.ts",
     "benchmark": "tsx ./scripts/benchmark.ts",
+    "demo:render": "bash ./scripts/render-demo.sh",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "postversion": "git push && git push --follow-tags",
     "publish:beta": "yarn && yarn clean && yarn validate && yarn build:release && yarn script:package-npm && yarn copy-files && npm publish --folder dist --tag beta",

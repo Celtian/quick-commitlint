@@ -8,7 +8,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Cache dependencies
+    - name: 💾 Cache dependencies
       if: inputs.caching == 'true'
       id: cache
       uses: actions/cache@v6
@@ -18,12 +18,12 @@ runs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - name: Install
+    - name: 🛠️ Install dependencies
       if: steps.cache.outputs.cache-hit != 'true' || inputs.caching != 'true'
       run: yarn install --frozen-lockfile
       shell: bash
 
-    - name: Restore lifecycle setup
+    - name: 🪝 Restore lifecycle setup
       if: steps.cache.outputs.cache-hit == 'true' && inputs.caching == 'true'
       run: yarn prepare
       shell: bash

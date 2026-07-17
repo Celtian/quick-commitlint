@@ -1,4 +1,4 @@
-name: Test PR
+name: 🧪 Test PR
 
 "on": pull_request
 
@@ -7,40 +7,40 @@ permissions:
 
 jobs:
   test:
-    name: Validate & Package
+    name: 🛠️ Validate & Package
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: 🗜️ Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Node
+      - name: 🗜️ Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
-      - name: Setup Zig
+      - name: 🗜️ Setup Zig
         uses: mlugg/setup-zig@v2
         with:
           version: 0.16.0
 
-      - name: Install dependencies
+      - name: 🛠️ Install dependencies
         uses: ./.github/actions/cached-deps
 
-      - name: Clean
+      - name: 🧹 Clean
         run: yarn clean
 
-      - name: Validate
+      - name: ✅ Validate
         run: yarn validate
 
-      - name: Build release executable
+      - name: ⚡ Build release executable
         run: yarn build:release
 
-      - name: Create npm package
+      - name: 📦 Create npm package
         run: yarn script:package-npm && yarn copy-files
 
-      - name: Smoke-test npm package
+      - name: 🧪 Smoke-test npm package
         run: yarn package:smoke
 
-      - name: Benchmark performance gate
+      - name: 🏁 Benchmark performance gate
         run: yarn benchmark
