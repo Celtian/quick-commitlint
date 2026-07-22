@@ -7,6 +7,7 @@ import { platforms } from './platforms';
 
 const projectRoot = resolve(__dirname, '..');
 const distDir = join(projectRoot, 'dist', 'quick-commitlint');
+const isWindows = process.platform === 'win32';
 const projectManifest = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8'));
 const manifest = JSON.parse(readFileSync(join(distDir, 'package.json'), 'utf8'));
 const expectedVersion = projectManifest.version;
@@ -50,7 +51,7 @@ try {
     installDir,
     'node_modules',
     '.bin',
-    process.platform === 'win32' ? 'quick-commitlint.cmd' : 'quick-commitlint',
+    isWindows ? 'quick-commitlint.cmd' : 'quick-commitlint',
   );
   const version = runCli(executable, ['--version']).stdout.trim();
   if (version !== `quick-commitlint ${expectedVersion}`) {
@@ -72,7 +73,7 @@ try {
 console.log('Cross-platform npm package smoke test passed.');
 
 function runNpm(args: string[], cwd: string): { stdout: string; stderr: string; status: number } {
-  const result = spawnSync('npm', args, { cwd, encoding: 'utf8' });
+  const result = spawnSync('npm', args, { cwd, encoding: 'utf8', shell: isWindows });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(`npm ${args.join(' ')} failed:\n${result.stdout}${result.stderr}`);
@@ -88,7 +89,7 @@ function runCli(
   const result = spawnSync(executable, args, {
     encoding: 'utf8',
     input,
-    shell: process.platform === 'win32',
+    shell: isWindows,
   });
   if (result.error) throw result.error;
   return { stdout: result.stdout, stderr: result.stderr, status: result.status };
