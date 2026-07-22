@@ -20,10 +20,7 @@ yarn validate
 \`\`\`bash
 yarn clean
 yarn validate
-yarn build:release
-yarn script:package-npm
-yarn copy-files
-yarn package:smoke
+yarn package
 \`\`\`
 
 ## Benchmark
@@ -49,10 +46,10 @@ Packaging changes require the release build and smoke test in addition to normal
 \`\`\`bash
 yarn build:release
 yarn script:package-npm
-yarn copy-files
 yarn package:smoke
+yarn script:package-github
 git diff --check
 \`\`\`
 
-The portal builds into \`dist/portal\`; the native npm package builds into \`dist/quick-commitlint\`.
+The portal builds into \`dist/portal\`; the cross-platform npm package builds into \`dist/quick-commitlint\`.
 `;export{t as default};

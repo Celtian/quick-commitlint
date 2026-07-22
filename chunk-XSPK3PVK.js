@@ -1,6 +1,6 @@
 import"./chunk-7CGTOI24.js";var a=`# Getting started
 
-Quick Commitlint is a native Linux x86-64 command that checks commit messages against a focused set of commitlint-compatible rules. The installed command starts the Zig binary directly and has no Node.js runtime dependencies.
+Quick Commitlint checks commit messages against a focused set of commitlint-compatible rules using a native Zig executable. A small Node.js launcher selects the executable bundled for the current platform, with no additional runtime npm dependencies.
 
 ## Install
 
@@ -41,5 +41,5 @@ Continue with [Usage](docs/usage/), review the accepted [commit message format](
 
 ## Platform support
 
-The current package supports Linux x86-64. Node and a package manager are only used to download the package; the command itself is a native executable.
+The package supports macOS arm64/x64, Linux arm64/x64, and Windows x64. The launcher requires Node.js 24 or 25 and uses it only to select and spawn the matching bundled Zig executable.
 `;export{a as default};

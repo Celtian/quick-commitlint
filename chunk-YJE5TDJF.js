@@ -1,6 +1,6 @@
 import"./chunk-7CGTOI24.js";var i=`# Commitlint compatibility
 
-Quick Commitlint is a focused native implementation of a tested subset of commitlint behavior. It is designed for projects that want the included Conventional or Angular rules without starting Node.js for every commit.
+Quick Commitlint is a focused native implementation of a tested subset of commitlint behavior. It is designed for projects that want the included Conventional or Angular rules without loading commitlint's JavaScript configuration and rule stack for every commit.
 
 It is not a drop-in replacement for every commitlint configuration.
 
@@ -19,7 +19,7 @@ The repository runs differential cases against \`@commitlint/cli\`, \`@commitlin
 
 | Area                  | Quick Commitlint                                                    | Full commitlint                                                  |
 | --------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Runtime               | Native Linux x86-64 Zig binary                                      | Node.js                                                          |
+| Runtime               | Small Node.js launcher plus a native Zig linting executable         | Node.js                                                          |
 | Default configuration | Built-in \`conventional\` when no config is found                     | Normally requires a discovered or supplied configuration         |
 | Configuration files   | Strict \`.quick-commitlint.json\` JSON                                | Multiple JS/TS/JSON/YAML formats through its configuration stack |
 | Presets               | Exactly \`conventional\` and \`angular\`                                | Shareable npm configurations and \`extends\`                       |
@@ -58,8 +58,8 @@ Quick Commitlint is a good fit when:
 
 - one of the two built-in presets is close to the desired policy;
 - the supported JSON overrides are sufficient;
-- fast native startup and a dependency-free installed command matter;
-- Linux x86-64 is the deployment platform.
+- fast native linting and no additional runtime npm dependencies matter;
+- macOS arm64/x64, Linux arm64/x64, or Windows x64 is the deployment platform.
 
 Use full commitlint when the project depends on shareable npm configurations, plugins, custom parsers, custom ignores, or rules outside the supported subset.
 `;export{i as default};
