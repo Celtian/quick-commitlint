@@ -36,9 +36,14 @@ function resolveBinary(platform = process.platform, arch = process.arch, baseDir
   return binaryPath;
 }
 
+function shouldUseExecve(platform = process.platform, getExecve = () => process.execve) {
+  if (platform !== 'darwin' && platform !== 'linux') return false;
+  return typeof getExecve() === 'function';
+}
+
 function run(args = process.argv.slice(2)) {
   const binaryPath = resolveBinary();
-  if (process.execve) {
+  if (shouldUseExecve()) {
     process.execve(binaryPath, [binaryPath, ...args], process.env);
   }
 
@@ -63,4 +68,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { getBinaryPath, resolveBinary, run };
+module.exports = { getBinaryPath, resolveBinary, run, shouldUseExecve };

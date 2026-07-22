@@ -6,7 +6,7 @@ const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { test } = require('node:test');
 
-const { getBinaryPath, resolveBinary } = require('../npm/quick-commitlint.js');
+const { getBinaryPath, resolveBinary, shouldUseExecve } = require('../npm/quick-commitlint.js');
 
 test('resolves every supported platform to its bundled binary', () => {
   const cases = [
@@ -37,4 +37,25 @@ test('reports a missing supported executable clearly', () => {
   } finally {
     rmSync(baseDir, { recursive: true, force: true });
   }
+});
+
+test('uses execve only on supported POSIX platforms when it is available', () => {
+  const available = () => () => {};
+
+  assert.equal(shouldUseExecve('darwin', available), true);
+  assert.equal(shouldUseExecve('linux', available), true);
+  assert.equal(
+    shouldUseExecve('linux', () => undefined),
+    false,
+  );
+
+  let windowsAccesses = 0;
+  assert.equal(
+    shouldUseExecve('win32', () => {
+      windowsAccesses += 1;
+      return () => {};
+    }),
+    false,
+  );
+  assert.equal(windowsAccesses, 0);
 });
