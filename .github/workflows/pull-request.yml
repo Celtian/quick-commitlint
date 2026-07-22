@@ -59,20 +59,49 @@ jobs:
         with:
           coverage-file: coverage/merged/kcov-merged/cobertura.xml
 
-      - name: ⚡ Build release executable
-        run: yarn build:release
-
-      - name: 📦 Create npm package
-        run: yarn script:package-npm && yarn copy-files
-
-      - name: 🧪 Smoke-test npm package
-        run: yarn package:smoke
+      - name: 📦 Build cross-platform package
+        run: yarn package
 
       - name: 🔎 Verify artifact layout
         run: |
           test -f dist/portal/browser/index.html
-          test -x dist/quick-commitlint/bin/quick-commitlint
+          test -x dist/quick-commitlint/bin/quick-commitlint.js
+          test -x dist/quick-commitlint/bin/native/darwin-arm64/quick-commitlint
+          test -x dist/quick-commitlint/bin/native/darwin-x64/quick-commitlint
+          test -x dist/quick-commitlint/bin/native/linux-arm64/quick-commitlint
+          test -x dist/quick-commitlint/bin/native/linux-x64/quick-commitlint
+          test -f dist/quick-commitlint/bin/native/win32-x64/quick-commitlint.exe
           test -f dist/quick-commitlint/package.json
 
       - name: 🏁 Benchmark performance gate
         run: yarn benchmark
+
+  package-smoke-test:
+    name: 📦 Package Smoke Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: 🗜️ Checkout
+        uses: actions/checkout@v7
+
+      - name: 🗜️ Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: 🗜️ Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: 🛠️ Install dependencies
+        uses: ./.github/actions/cached-deps
+        with:
+          caching: 'false'
+
+      - name: 📦 Build and smoke-test cross-platform package
+        run: yarn package

@@ -18,14 +18,14 @@
 
 </div>
 
-`quick-commitlint` checks Conventional Commit messages with a native Linux x86-64 executable. Node and Yarn are used to distribute the package, but the installed command starts the Zig binary directly and has no runtime dependencies.
+`quick-commitlint` checks Conventional Commit messages with native Zig executables for macOS, Linux, and Windows. A small Node.js launcher selects the executable bundled for the current platform; the package has no runtime npm dependencies.
 
 ## ✨ Why use it?
 
 | Feature                          | Details                                                                           |
 | -------------------------------- | --------------------------------------------------------------------------------- |
-| ⚡ **Fast native executable**    | Starts in about one millisecond without loading a JavaScript runtime.             |
-| 📦 **Zero runtime dependencies** | npm installs a standalone, statically linked Zig binary.                          |
+| ⚡ **Fast native linting**       | A thin launcher hands all linting work to the bundled Zig executable.             |
+| 📦 **Zero package dependencies** | All supported native executables ship in the npm package.                         |
 | 🧩 **Familiar configuration**    | Uses commitlint-style rule tuples with built-in conventional and Angular presets. |
 | 🔒 **Strict and predictable**    | Rejects malformed JSON, unknown options, duplicate keys, and invalid UTF-8.       |
 | 🌍 **International subjects**    | Counts Unicode code points while keeping syntax checks fast and ASCII-based.      |
@@ -40,7 +40,7 @@ npm install quick-commitlint --save-dev
 yarn add quick-commitlint --dev
 ```
 
-The initial release supports Linux x86-64 only.
+The package includes native executables for macOS arm64/x64, Linux arm64/x64, and Windows x64. The launcher requires Node.js 24 or 25.
 
 ## 🪝 Use in a commit hook
 
@@ -131,15 +131,12 @@ yarn install
 yarn validate
 ```
 
-Build the publishable Linux x86-64 package and test its tarball:
+Build the publishable cross-platform package and test its tarball:
 
 ```bash
 yarn clean
 yarn validate
-yarn build:release
-yarn script:package-npm
-yarn copy-files
-yarn package:smoke
+yarn package
 ```
 
 Build artifacts are kept as sibling outputs with no overlap between the website and published native package:
@@ -149,7 +146,9 @@ dist/
 ├── portal/
 │   └── browser/             # Angular SSG output for GitHub Pages
 └── quick-commitlint/
-    ├── bin/quick-commitlint # Native Zig executable
+    ├── bin/
+    │   ├── quick-commitlint.js # Platform launcher
+    │   └── native/            # Five platform-specific Zig executables
     ├── LICENSE
     ├── README.md
     └── package.json         # Publishable npm manifest
@@ -169,7 +168,6 @@ yarn benchmark
 The README animation is defined in `docs/terminal-demo.tape` and rendered with the official VHS Docker image:
 
 ```bash
-yarn build:release
 yarn demo:render
 ```
 

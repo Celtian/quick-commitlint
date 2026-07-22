@@ -16,7 +16,8 @@ const config_limit = 256 * 1024;
 const config_name = ".quick-commitlint.json";
 
 pub fn main(init: std.process.Init) !void {
-    var args = init.minimal.args.iterate();
+    var args = try init.minimal.args.iterateAllocator(init.gpa);
+    defer args.deinit();
     _ = args.next();
 
     switch (cli.parse(&args)) {
