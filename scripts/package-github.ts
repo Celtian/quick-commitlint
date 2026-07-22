@@ -1,25 +1,14 @@
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import { readJsonSync, writeFileSync } from 'fs-extra';
 import { join, resolve } from 'path';
 
-const pkg = require(resolve(__dirname, '..', 'package.json'));
+const distDir = resolve(__dirname, '..', 'dist', 'quick-commitlint');
+const pkg = readJsonSync(join(distDir, 'package.json'));
 
-pkg.scripts = undefined;
-pkg.devDependencies = undefined;
-pkg.packageManager = undefined;
-pkg.engines = undefined;
-pkg.files = undefined;
-pkg.bin = {
-  'quick-commitlint': 'bin/quick-commitlint',
-};
-pkg.os = ['linux'];
-pkg.cpu = ['x64'];
 pkg.name = '@celtian/quick-commitlint';
 pkg.publishConfig = {
   registry: 'https://npm.pkg.github.com',
 };
 
-const distDir = join(__dirname, '..', 'dist', 'quick-commitlint');
-ensureDirSync(distDir);
 writeFileSync(join(distDir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n');
 
-console.log('Generated the GitHub Packages manifest in dist/quick-commitlint/.');
+console.log('Prepared dist/quick-commitlint/package.json for GitHub Packages.');

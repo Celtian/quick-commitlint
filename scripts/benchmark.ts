@@ -4,7 +4,7 @@ import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 const root = resolve(__dirname, '..');
-const native = resolve(root, 'dist', 'quick-commitlint', 'bin', 'quick-commitlint');
+const packaged = resolve(root, 'dist', 'quick-commitlint', 'bin', 'quick-commitlint.js');
 const commitlint = resolve(root, 'node_modules', '@commitlint', 'cli', 'cli.js');
 const iterations = Number(process.env.BENCHMARK_ITERATIONS ?? 40);
 const temp = mkdtempSync(join(tmpdir(), 'quick-commitlint-benchmark-'));
@@ -38,11 +38,15 @@ function measure(command: string, args: string[], input?: string): number {
 }
 
 try {
-  const nativeFile = measure(native, [messagePath]);
-  const nativeStdin = measure(native, [], 'feat(benchmark): measure native startup');
-  const nativeConfig = measure(
-    native,
-    ['--config', configPath],
+  const packagedFile = measure(process.execPath, [packaged, messagePath]);
+  const packagedStdin = measure(
+    process.execPath,
+    [packaged],
+    'feat(benchmark): measure native startup',
+  );
+  const packagedConfig = measure(
+    process.execPath,
+    [packaged, '--config', configPath],
     'feat(benchmark): measure native startup',
   );
   const nodeStdin = measure(
@@ -50,10 +54,10 @@ try {
     [commitlint, '--extends', '@commitlint/config-conventional'],
     'feat(benchmark): measure native startup',
   );
-  const ratio = nodeStdin / nativeStdin;
-  console.log(`quick-commitlint file median: ${nativeFile.toFixed(3)} ms`);
-  console.log(`quick-commitlint stdin median: ${nativeStdin.toFixed(3)} ms`);
-  console.log(`quick-commitlint JSON config median: ${nativeConfig.toFixed(3)} ms`);
+  const ratio = nodeStdin / packagedStdin;
+  console.log(`quick-commitlint file median: ${packagedFile.toFixed(3)} ms`);
+  console.log(`quick-commitlint stdin median: ${packagedStdin.toFixed(3)} ms`);
+  console.log(`quick-commitlint JSON config median: ${packagedConfig.toFixed(3)} ms`);
   console.log(`commitlint stdin median: ${nodeStdin.toFixed(3)} ms`);
   console.log(`cold-process improvement: ${ratio.toFixed(1)}x`);
   if (ratio < 10) throw new Error(`Performance gate failed: ${ratio.toFixed(1)}x is below 10x.`);

@@ -3,8 +3,8 @@
     <p class="eyebrow">Native Conventional Commit linting</p>
     <h1 id="hero-title" tabindex="-1">Commit message checks at native speed.</h1>
     <p class="hero-copy">
-      Quick Commitlint is a strict, dependency-free linter built with Zig. It starts in about a
-      millisecond and understands familiar commitlint-style presets and rule tuples.
+      Quick Commitlint is a strict native linter built with Zig. It understands familiar
+      commitlint-style presets and rule tuples across macOS, Linux, and Windows.
     </p>
     <div class="hero-actions">
       <a mat-flat-button routerLink="/docs/getting-started">Get started</a>
@@ -29,17 +29,17 @@
       <mat-card appearance="outlined">
         <mat-card-header><mat-card-title>Fast native executable</mat-card-title></mat-card-header>
         <mat-card-content>
-          Starts without loading a JavaScript runtime and reports elapsed lint time with every
-          result.
+          A thin platform launcher hands linting to a bundled Zig executable and reports elapsed
+          lint time with every result.
         </mat-card-content>
       </mat-card>
       <mat-card appearance="outlined">
         <mat-card-header
-          ><mat-card-title>Zero runtime dependencies</mat-card-title></mat-card-header
+          ><mat-card-title>Zero package dependencies</mat-card-title></mat-card-header
         >
         <mat-card-content>
-          npm distributes a standalone Zig binary. Node and Yarn are only used for delivery and
-          development.
+          The npm package includes all supported native executables without installing additional
+          runtime packages.
         </mat-card-content>
       </mat-card>
       <mat-card appearance="outlined">
@@ -56,7 +56,7 @@
     <div>
       <p class="eyebrow">Ready in one command</p>
       <h2 id="install-title">Install as a development tool</h2>
-      <p>The current package targets Linux x86-64.</p>
+      <p>Supports macOS arm64/x64, Linux arm64/x64, and Windows x64.</p>
     </div>
     <div class="install-commands" aria-label="Installation commands">
       <pre><code>npm install quick-commitlint --save-dev</code></pre>

@@ -43,19 +43,18 @@ jobs:
       - name: ✅ Validate
         run: yarn validate
 
-      - name: ⚡ Build release executable
-        run: yarn build:release
-
-      - name: 📦 Create npm package
-        run: yarn script:package-npm && yarn copy-files
-
-      - name: 🧪 Smoke-test npm package
-        run: yarn package:smoke
+      - name: 📦 Build cross-platform package
+        run: yarn package
 
       - name: 🔎 Verify artifact layout
         run: |
           test -f dist/portal/browser/index.html
-          test -x dist/quick-commitlint/bin/quick-commitlint
+          test -x dist/quick-commitlint/bin/quick-commitlint.js
+          test -x dist/quick-commitlint/bin/native/darwin-arm64/quick-commitlint
+          test -x dist/quick-commitlint/bin/native/darwin-x64/quick-commitlint
+          test -x dist/quick-commitlint/bin/native/linux-arm64/quick-commitlint
+          test -x dist/quick-commitlint/bin/native/linux-x64/quick-commitlint
+          test -f dist/quick-commitlint/bin/native/win32-x64/quick-commitlint.exe
           test -f dist/quick-commitlint/package.json
 
       - name: 🚀 Publish npm
