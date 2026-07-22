@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
@@ -43,7 +43,10 @@ const tarball = join(distDir, packed[0].filename);
 const installDir = mkdtempSync(join(tmpdir(), 'quick-commitlint-package-'));
 
 try {
-  writeFileSync(join(installDir, 'package.json'), '{"private":true}\n');
+  writeFileSync(
+    join(installDir, 'package.json'),
+    '{"private":true,"scripts":{"quick-commitlint":"quick-commitlint"}}\n',
+  );
   mkdirSync(join(installDir, 'node_modules'), { recursive: true });
   runNpm(['install', '--ignore-scripts', '--no-package-lock', tarball], installDir);
 
@@ -53,17 +56,30 @@ try {
     '.bin',
     isWindows ? 'quick-commitlint.cmd' : 'quick-commitlint',
   );
-  const version = runCli(executable, ['--version']).stdout.trim();
+  if (!existsSync(executable))
+    throw new Error(`npm did not create the executable shim at ${executable}.`);
+
+  const versionResult = runCli(installDir, ['--version']);
+  if (versionResult.status !== 0) {
+    throw new Error(
+      `Packaged --version exited with ${versionResult.status}:\n${formatOutput(versionResult)}`,
+    );
+  }
+  const version = versionResult.stdout.trim();
   if (version !== `quick-commitlint ${expectedVersion}`) {
-    throw new Error(`Unexpected version: ${version}`);
+    throw new Error(
+      `Unexpected version ${JSON.stringify(version)}:\n${formatOutput(versionResult)}`,
+    );
   }
 
-  const valid = runCli(executable, [], 'feat: verify packaged command');
-  if (valid.status !== 0) throw new Error(`Valid message exited with ${valid.status}.`);
+  const valid = runCli(installDir, [], 'feat: verify packaged command');
+  if (valid.status !== 0) {
+    throw new Error(`Valid message exited with ${valid.status}:\n${formatOutput(valid)}`);
+  }
 
-  const invalid = runCli(executable, [], 'invalid: verify packaged command');
+  const invalid = runCli(installDir, [], 'invalid: verify packaged command');
   if (invalid.status !== 1 || !invalid.stderr.includes('[type-enum]')) {
-    throw new Error(`Invalid message produced an unexpected result:\n${invalid.stderr}`);
+    throw new Error(`Invalid message produced an unexpected result:\n${formatOutput(invalid)}`);
   }
 } finally {
   rmSync(tarball, { force: true });
@@ -81,12 +97,9 @@ function runNpm(args: string[], cwd: string): { stdout: string; stderr: string; 
   return { stdout: result.stdout, stderr: result.stderr, status: result.status };
 }
 
-function runCli(
-  executable: string,
-  args: string[],
-  input?: string,
-): { stdout: string; stderr: string; status: number | null } {
-  const result = spawnSync(executable, args, {
+function runCli(cwd: string, args: string[], input?: string): CommandResult {
+  const result = spawnSync('npm', ['run', '--silent', 'quick-commitlint', '--', ...args], {
+    cwd,
     encoding: 'utf8',
     input,
     shell: isWindows,
@@ -94,3 +107,9 @@ function runCli(
   if (result.error) throw result.error;
   return { stdout: result.stdout, stderr: result.stderr, status: result.status };
 }
+
+function formatOutput(result: CommandResult): string {
+  return `stdout:\n${result.stdout}\nstderr:\n${result.stderr}`;
+}
+
+type CommandResult = { stdout: string; stderr: string; status: number | null };
