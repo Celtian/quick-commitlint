@@ -1,0 +1,24 @@
+name: 🧪 Generate coverage
+description: Generate a kcov coverage report in Docker
+inputs:
+  kcov-image:
+    description: Pinned kcov Docker image
+    required: false
+    default: kcov/kcov@sha256:481289ae32e55e5b733019515acd10948a4f76dfed381765577db909664fc603
+runs:
+  using: composite
+  steps:
+    - name: 🧪 Generate coverage
+      shell: bash
+      env:
+        KCOV_IMAGE: ${{ inputs.kcov-image }}
+      run: |
+        docker run --rm \
+          --cap-add=SYS_PTRACE \
+          --security-opt seccomp=unconfined \
+          --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+          --workdir "$GITHUB_WORKSPACE" \
+          --user "$(id -u):$(id -g)" \
+          --entrypoint /bin/sh \
+          "$KCOV_IMAGE" \
+          "$GITHUB_WORKSPACE/scripts/coverage.sh"
