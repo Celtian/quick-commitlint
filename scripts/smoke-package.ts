@@ -24,8 +24,8 @@ if ('os' in manifest || 'cpu' in manifest) {
 if (manifest.dependencies && Object.keys(manifest.dependencies).length !== 0) {
   throw new Error('The published package has runtime package dependencies.');
 }
-if (manifest.engines?.node !== projectManifest.engines.node || 'npm' in manifest.engines) {
-  throw new Error('The published package must declare only the supported Node.js runtime.');
+if ('engines' in manifest) {
+  throw new Error('The published package must not declare runtime engine requirements.');
 }
 
 const dryRun = JSON.parse(runNpm(['pack', '--dry-run', '--json'], distDir).stdout);

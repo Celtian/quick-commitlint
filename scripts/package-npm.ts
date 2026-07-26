@@ -16,7 +16,7 @@ const pkg = require(join(rootDir, 'package.json'));
 pkg.scripts = undefined;
 pkg.devDependencies = undefined;
 pkg.packageManager = undefined;
-pkg.engines = { node: pkg.engines.node };
+pkg.engines = undefined;
 pkg.files = undefined;
 pkg.bin = {
   'quick-commitlint': 'bin/quick-commitlint.js',

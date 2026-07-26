@@ -8,6 +8,7 @@ const color = struct {
     const green = "\x1b[32m";
     const yellow = "\x1b[33m";
     const cyan = "\x1b[36m";
+    const dim = "\x1b[2m";
     const dim_cyan = "\x1b[2;36m";
 };
 
@@ -33,7 +34,7 @@ pub fn main(init: std.process.Init) !void {
         .lint => |options| execute(init, options) catch |err| {
             var buffer: [4096]u8 = undefined;
             var writer = std.Io.File.stderr().writer(init.io, &buffer);
-            try writer.interface.print(color.red ++ "error" ++ color.reset ++ ": {s}\n", .{@errorName(err)});
+            try writer.interface.print("\n" ++ color.red ++ "error" ++ color.reset ++ ": {s}\n", .{@errorName(err)});
             try writer.interface.flush();
             std.process.exit(2);
         },
@@ -42,6 +43,13 @@ pub fn main(init: std.process.Init) !void {
 
 fn execute(init: std.process.Init, options: cli.Options) !void {
     const started: std.Io.Clock.Timestamp = .now(init.io, .awake);
+    {
+        var buffer: [4096]u8 = undefined;
+        var writer = std.Io.File.stderr().writer(init.io, &buffer);
+        try writer.interface.writeAll(color.cyan ++ "..." ++ color.reset ++ color.dim ++ "Checking commit message…" ++ color.reset ++ "\n");
+        try writer.interface.flush();
+    }
+
     const message = if (options.message_path) |path|
         try readFileAlloc(init.gpa, init.io, path, message_limit)
     else
@@ -69,19 +77,22 @@ fn execute(init: std.process.Init, options: cli.Options) !void {
 
     var buffer: [4096]u8 = undefined;
     var writer = std.Io.File.stderr().writer(init.io, &buffer);
-    try writer.interface.writeByte('\n');
-    for (report.issues()) |issue| {
-        const symbol = if (issue.severity == .err) "✖" else "⚠";
-        const symbol_color = if (issue.severity == .err) color.red else color.yellow;
-        try writer.interface.print("  {s}{s}{s}  {s}  {s}[{s}]{s}\n", .{
-            symbol_color,
-            symbol,
-            color.reset,
-            issue.message,
-            color.cyan,
-            issue.rule.name(),
-            color.reset,
-        });
+    if (report.len > 0) try writer.interface.writeByte('\n');
+    for ([_]quick.config.Severity{ .err, .warning }) |severity| {
+        for (report.issues()) |issue| {
+            if (issue.severity != severity) continue;
+            const symbol = if (issue.severity == .err) "✖" else "⚠";
+            const symbol_color = if (issue.severity == .err) color.red else color.yellow;
+            try writer.interface.print("  {s}{s}{s}  {s}  {s}[{s}]{s}\n", .{
+                symbol_color,
+                symbol,
+                color.reset,
+                issue.message,
+                color.cyan,
+                issue.rule.name(),
+                color.reset,
+            });
+        }
     }
 
     if (report.len > 0) try writer.interface.writeByte('\n');
@@ -89,7 +100,7 @@ fn execute(init: std.process.Init, options: cli.Options) !void {
     const summary_color = if (report.errors > 0) color.red else if (report.warnings > 0) color.yellow else color.green;
     const error_suffix = if (report.errors == 1) "" else "s";
     const warning_suffix = if (report.warnings == 1) "" else "s";
-    try writer.interface.print("  {s}{s}{s}  {s}{d} error{s}{s} · {s}{d} warning{s}{s} · {s}{d:.2} ms{s}\n\n", .{
+    try writer.interface.print("{s}{s}{s}  {s}{d} error{s}{s} · {s}{d} warning{s}{s} · {s}{d:.2} ms{s}\n", .{
         summary_color,
         summary_symbol,
         color.reset,

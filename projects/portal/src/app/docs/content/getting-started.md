@@ -16,6 +16,18 @@ With Yarn:
 yarn add quick-commitlint --dev
 ```
 
+With pnpm:
+
+```bash
+pnpm add -D quick-commitlint
+```
+
+With Bun:
+
+```bash
+bun add quick-commitlint --dev
+```
+
 ## Lint your first message
 
 Pipe a Conventional Commit message to the command:

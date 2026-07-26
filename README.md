@@ -32,12 +32,28 @@
 
 ## 🚀 Install
 
+With npm:
+
 ```bash
 npm install quick-commitlint --save-dev
 ```
 
+With Yarn:
+
 ```bash
 yarn add quick-commitlint --dev
+```
+
+With pnpm:
+
+```bash
+pnpm add -D quick-commitlint
+```
+
+With Bun:
+
+```bash
+bun add quick-commitlint --dev
 ```
 
 The package includes native executables for macOS arm64/x64, Linux arm64/x64, and Windows x64. The launcher requires Node.js 24 or 25.
@@ -46,9 +62,35 @@ The package includes native executables for macOS arm64/x64, Linux arm64/x64, an
 
 Pass the commit-message file as the only positional argument:
 
-```bash
+```sh
 quick-commitlint "$1"
 ```
+
+### Husky 9
+
+Install and initialize Husky with npm:
+
+```bash
+npm install husky --save-dev
+npx husky init
+```
+
+Or with Yarn:
+
+```bash
+yarn add husky --dev
+yarn exec husky init
+```
+
+`husky init` configures Git hooks and creates an example `.husky/pre-commit` hook. Customize or remove that example hook if you do not need it.
+
+Then create `.husky/commit-msg`:
+
+```sh
+quick-commitlint "$1"
+```
+
+Husky adds local `node_modules/.bin` commands to the hook's `PATH`, so this runs the installed Quick Commitlint development dependency. Git supplies the proposed commit-message file as `$1`.
 
 Or lint a message from standard input:
 

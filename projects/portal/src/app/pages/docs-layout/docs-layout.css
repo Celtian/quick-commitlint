@@ -10,22 +10,36 @@ mat-sidenav-container {
 }
 
 mat-sidenav {
+  --mat-sidenav-container-shape: 0;
+
   background: var(--mat-sys-surface-container-low);
   border-right: 1px solid var(--mat-sys-outline-variant);
-  padding: 1rem 0.75rem;
   width: 17.5rem;
+}
+
+nav {
+  display: grid;
+  padding: 1rem 0.75rem;
+}
+
+.nav-group {
+  min-width: 0;
+}
+
+.nav-group + .nav-group {
+  border-block-start: 1px solid var(--mat-sys-outline-variant);
+  margin-block-start: 1.25rem;
+  padding-block-start: 1.25rem;
 }
 
 .nav-heading {
   color: var(--mat-sys-on-surface-variant);
-  font: var(--mat-sys-label-large);
-  letter-spacing: 0.06em;
-  margin: 1.25rem 1rem 0.25rem;
+  font: var(--mat-sys-title-large);
+  font-size: 1.25rem;
+  font-weight: var(--mat-sys-label-large-weight-prominent);
+  letter-spacing: 0.04em;
+  margin: 0 1rem 0.5rem;
   text-transform: uppercase;
-}
-
-.nav-heading:first-child {
-  margin-block-start: 0.5rem;
 }
 
 .mobile-docs-bar {

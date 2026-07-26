@@ -46,11 +46,31 @@ Git calls `commit-msg` with the path to the proposed message. A minimal hook is:
 quick-commitlint "$1"
 ```
 
-With Husky, put the command in `.husky/commit-msg`:
+### Husky 9
+
+Install and initialize Husky with npm:
+
+```bash
+npm install husky --save-dev
+npx husky init
+```
+
+Or with Yarn:
+
+```bash
+yarn add husky --dev
+yarn exec husky init
+```
+
+`husky init` configures Git hooks and creates an example `.husky/pre-commit` hook. Customize or remove that example hook if you do not need it.
+
+Then create `.husky/commit-msg`:
 
 ```sh
 quick-commitlint "$1"
 ```
+
+Husky adds local `node_modules/.bin` commands to the hook's `PATH`, so this runs the installed Quick Commitlint development dependency. Git supplies the proposed commit-message file as `$1`.
 
 Make sure the hook file is executable when it is managed directly by Git.
 
