@@ -22,7 +22,7 @@ runs:
         hide_complexity: true
         indicators: true
         output: both
-        thresholds: '60 80'
+        thresholds: '70 80'
 
     - name: 💬 Add coverage PR comment
       uses: marocchino/sticky-pull-request-comment@v2

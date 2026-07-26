@@ -6,6 +6,7 @@ import { join, resolve } from 'path';
 const native = resolve(__dirname, '..', 'zig-out', 'bin', 'quick-commitlint');
 const expectedVersion = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf8')).version;
 const temp = mkdtempSync(join(tmpdir(), 'quick-commitlint-integration-'));
+const lintStatus = '\x1b[36m...\x1b[0m\x1b[2mChecking commit message…\x1b[0m\n';
 
 function run(args: string[], input?: string | Buffer, cwd = temp) {
   return spawnSync(native, args, { input, cwd, encoding: input instanceof Buffer ? undefined : 'utf8' });
@@ -19,15 +20,32 @@ function expectTimedSummary(output: string, context: string): void {
   if (!/\d+\.\d{2} ms/.test(output)) throw new Error(`${context}: missing two-decimal timing.`);
 }
 
+function expectLintStatus(output: string, context: string): string {
+  if (!output.startsWith(lintStatus)) throw new Error(`${context}: missing lint status.`);
+  return output.slice(lintStatus.length);
+}
+
+function expectOperationalFailure(output: string, context: string): void {
+  const failure = expectLintStatus(output, context);
+  if (!failure.startsWith('\n\x1b[31merror\x1b[0m')) {
+    throw new Error(`${context}: expected one blank line before operational error.`);
+  }
+}
+
 function expectReportSpacing(output: string, context: string, hasIssues: boolean): void {
-  if (!output.startsWith('\n  ') || output.startsWith('\n\n')) {
-    throw new Error(`${context}: expected exactly one leading blank line.`);
+  const report = expectLintStatus(output, context);
+  if (hasIssues && !report.startsWith('\n  ')) {
+    throw new Error(`${context}: expected one blank line before indented issues.`);
   }
-  if (!output.endsWith('\n\n') || output.endsWith('\n\n\n')) {
-    throw new Error(`${context}: expected exactly one trailing blank line.`);
+  if (!hasIssues && report.startsWith('\n')) {
+    throw new Error(`${context}: successful report must follow lint status without a blank line.`);
   }
-  if (hasIssues && !output.includes(']\x1b[0m\n\n  ')) {
-    throw new Error(`${context}: missing blank line between issues and summary.`);
+  const summaryOffset = hasIssues ? report.indexOf('\n\n', 1) + 2 : 0;
+  if ((hasIssues && summaryOffset === 1) || report[summaryOffset] === ' ' || report[summaryOffset] === '\n') {
+    throw new Error(`${context}: unexpected whitespace before summary.`);
+  }
+  if (!report.endsWith('\n') || report.endsWith('\n\n')) {
+    throw new Error(`${context}: expected exactly one terminating newline.`);
   }
 }
 
@@ -69,6 +87,24 @@ try {
   expectTimedSummary(warningOutput, 'warning summary');
   expectReportSpacing(warningOutput, 'warning report', true);
 
+  const mixed = run([], 'wat: Subject.\nbody without blank');
+  expectStatus(mixed.status, 1, 'mixed severity stdin');
+  const mixedOutput = String(mixed.stderr);
+  expectReportSpacing(mixedOutput, 'mixed severity report', true);
+  const subjectCaseIndex = mixedOutput.indexOf('[subject-case]');
+  const subjectFullStopIndex = mixedOutput.indexOf('[subject-full-stop]');
+  const typeEnumIndex = mixedOutput.indexOf('[type-enum]');
+  const warningIndex = mixedOutput.indexOf('[body-leading-blank]');
+  if (
+    subjectCaseIndex === -1 ||
+    subjectFullStopIndex === -1 ||
+    typeEnumIndex === -1 ||
+    warningIndex === -1 ||
+    !(subjectCaseIndex < subjectFullStopIndex && subjectFullStopIndex < typeEnumIndex && typeEnumIndex < warningIndex)
+  ) {
+    throw new Error('Mixed severity report must preserve error rule order and display warnings last.');
+  }
+
   const messagePath = join(temp, 'COMMIT_EDITMSG');
   writeFileSync(messagePath, 'fix(core): handle CRLF\r\n\r\nbody\r\n');
   expectStatus(run([messagePath]).status, 0, 'message file with CRLF');
@@ -85,25 +121,39 @@ try {
 
   const malformed = join(temp, 'malformed.json');
   writeFileSync(malformed, '{"unknown":true}\n');
-  expectStatus(run(['--config', malformed], 'feat: parser').status, 2, 'unknown config key');
+  const malformedResult = run(['--config', malformed], 'feat: parser');
+  expectStatus(malformedResult.status, 2, 'unknown config key');
+  expectOperationalFailure(String(malformedResult.stderr), 'unknown config key');
 
-  expectStatus(run([], Buffer.from([0x66, 0x65, 0x61, 0x74, 0x3a, 0x20, 0xff])).status, 2, 'invalid UTF-8');
+  const invalidUtf8 = run([], Buffer.from([0x66, 0x65, 0x61, 0x74, 0x3a, 0x20, 0xff]));
+  expectStatus(invalidUtf8.status, 2, 'invalid UTF-8');
+  expectOperationalFailure(String(invalidUtf8.stderr), 'invalid UTF-8');
   const unknown = run(['--unknown']);
   expectStatus(unknown.status, 2, 'unknown CLI option');
   if (!String(unknown.stderr).includes('\x1b[31merror\x1b[0m')) throw new Error('CLI error is not red.');
+  if (String(unknown.stderr).includes('Checking commit message')) {
+    throw new Error('Invalid argument output must not include lint status.');
+  }
 
   const oversized = join(temp, 'oversized-message');
   writeFileSync(oversized, Buffer.alloc(1024 * 1024 + 1, 0x61));
-  expectStatus(run([oversized]).status, 2, 'message size limit');
+  const oversizedResult = run([oversized]);
+  expectStatus(oversizedResult.status, 2, 'message size limit');
+  expectOperationalFailure(String(oversizedResult.stderr), 'message size limit');
 
   const oversizedConfig = join(temp, 'oversized-config.json');
   writeFileSync(oversizedConfig, Buffer.alloc(256 * 1024 + 1, 0x20));
-  expectStatus(run(['--config', oversizedConfig], 'feat: parser').status, 2, 'config size limit');
+  const oversizedConfigResult = run(['--config', oversizedConfig], 'feat: parser');
+  expectStatus(oversizedConfigResult.status, 2, 'config size limit');
+  expectOperationalFailure(String(oversizedConfigResult.stderr), 'config size limit');
 
   const version = run(['--version']);
   expectStatus(version.status, 0, 'version');
   if (String(version.stdout).trim() !== `quick-commitlint ${expectedVersion}`) {
     throw new Error('Incorrect version output.');
+  }
+  if (String(version.stderr).includes('Checking commit message')) {
+    throw new Error('Version output must not include lint status.');
   }
 
   const help = run(['--help']);
@@ -111,6 +161,9 @@ try {
   if (!String(help.stdout).includes('\x1b[96mQuick Commitlint\x1b[0m')) throw new Error('Help title is not cyan.');
   if (!String(help.stdout).includes('\x1b[33mUsage:\x1b[0m')) throw new Error('Help section is not yellow.');
   if (!String(help.stdout).includes('\x1b[32m-c, --config <path>\x1b[0m')) throw new Error('Help option is not green.');
+  if (String(help.stderr).includes('Checking commit message')) {
+    throw new Error('Help output must not include lint status.');
+  }
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }

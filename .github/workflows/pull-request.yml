@@ -6,10 +6,6 @@ permissions:
   contents: read
   pull-requests: write
 
-env:
-  # kcov/kcov:latest, pinned for reproducible builds
-  KCOV_IMAGE: kcov/kcov@sha256:481289ae32e55e5b733019515acd10948a4f76dfed381765577db909664fc603
-
 jobs:
   test:
     name: 🛠️ Validate & Package
@@ -21,7 +17,7 @@ jobs:
       - name: 🗜️ Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
 
       - name: 🗜️ Setup Zig
@@ -42,16 +38,7 @@ jobs:
         run: yarn coverage:build
 
       - name: 🧪 Generate coverage
-        run: |
-          docker run --rm \
-            --cap-add=SYS_PTRACE \
-            --security-opt seccomp=unconfined \
-            --volume "$PWD:$PWD" \
-            --workdir "$PWD" \
-            --user "$(id -u):$(id -g)" \
-            --entrypoint /bin/sh \
-            "$KCOV_IMAGE" \
-            "$PWD/scripts/coverage.sh"
+        uses: ./.github/actions/generate-coverage
 
       - name: 📊 Report coverage
         if: github.event.pull_request.head.repo.full_name == github.repository
@@ -91,7 +78,7 @@ jobs:
       - name: 🗜️ Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: .nvmrc
 
       - name: 🗜️ Setup Zig
         uses: mlugg/setup-zig@v2

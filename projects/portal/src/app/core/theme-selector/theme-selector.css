@@ -3,11 +3,16 @@
 }
 
 button {
+  align-items: center;
+  display: inline-flex;
   min-width: auto;
 }
 
-button > span:first-child {
+.theme-icon {
+  align-items: center;
+  display: inline-flex;
   font-size: 1.25rem;
+  line-height: 1;
   margin-inline-end: 0.4rem;
 }
 
