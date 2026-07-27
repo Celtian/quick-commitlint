@@ -10,12 +10,6 @@ With npm:
 npm install quick-commitlint --save-dev
 ```
 
-With Yarn:
-
-```bash
-yarn add quick-commitlint --dev
-```
-
 With pnpm:
 
 ```bash
@@ -25,7 +19,7 @@ pnpm add -D quick-commitlint
 With Bun:
 
 ```bash
-bun add quick-commitlint --dev
+bun add --dev quick-commitlint
 ```
 
 ## Lint your first message

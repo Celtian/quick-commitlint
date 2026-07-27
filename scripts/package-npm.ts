@@ -39,7 +39,7 @@ chmodSync(launcherPath, 0o755);
 for (const platform of platforms) {
   const source = join(rootDir, 'zig-out', 'platforms', platform.id, 'bin', platform.binary);
   if (!pathExistsSync(source)) {
-    throw new Error(`Missing ${platform.id} binary. Run "yarn build:release" first.`);
+    throw new Error(`Missing ${platform.id} binary. Run "bun run build:release" first.`);
   }
 
   const nativeDir = join(binDir, 'native', platform.id);

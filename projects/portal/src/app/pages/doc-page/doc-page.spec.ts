@@ -17,7 +17,7 @@ describe('DocPage', () => {
     fixture.componentRef.setInput('document', DOCUMENTS[0]);
     fixture.componentRef.setInput(
       'content',
-      '# Getting started\n\n## Install\n\nUse `yarn add`.\n\n<script>alert("unsafe")</script>',
+      '# Getting started\n\n## Install\n\nUse `bun add`.\n\n<script>alert("unsafe")</script>',
     );
     await fixture.whenStable();
     const element = fixture.nativeElement as HTMLElement;

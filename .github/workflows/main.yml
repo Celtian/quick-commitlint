@@ -29,6 +29,9 @@ jobs:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
 
+      - name: 🗜️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: 🗜️ Setup Zig
         uses: mlugg/setup-zig@v2
         with:
@@ -38,13 +41,13 @@ jobs:
         uses: ./.github/actions/cached-deps
 
       - name: 🧹 Clean
-        run: yarn clean
+        run: bun run clean
 
       - name: ✅ Validate
-        run: yarn validate
+        run: bun run validate
 
       - name: 📦 Build cross-platform package
-        run: yarn package
+        run: bun run package
 
       - name: 🔎 Verify artifact layout
         run: |
@@ -73,7 +76,7 @@ jobs:
 
       - name: 📦 Create GitHub Packages manifest
         if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, 'beta') == false
-        run: yarn script:package-github
+        run: bun run script:package-github
 
       - name: 🗜️ Setup GitHub Packages
         if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, 'beta') == false
@@ -91,10 +94,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ github.token }}
 
       - name: 📦 Build portal app
-        run: yarn portal:build:pages
+        run: bun run portal:build:pages
 
       - name: 🔎 Verify prerendered pages
-        run: yarn portal:ssg:verify
+        run: bun run portal:ssg:verify
 
       - name: 🛠️ Copy index.html to 404.html
         run: cp ./dist/portal/browser/index.html ./dist/portal/browser/404.html

@@ -10,5 +10,5 @@ _None_
 
 - [ ] I have performed a self-review of my code.
 - [ ] If it is a core feature, I have added thorough tests.
-- [ ] I have run `yarn validate` when required.
+- [ ] I have run `bun run validate` when required.
 - [ ] If CLI behavior changed, I have smoke-tested the affected commands.

@@ -38,12 +38,6 @@ With npm:
 npm install quick-commitlint --save-dev
 ```
 
-With Yarn:
-
-```bash
-yarn add quick-commitlint --dev
-```
-
 With pnpm:
 
 ```bash
@@ -53,7 +47,7 @@ pnpm add -D quick-commitlint
 With Bun:
 
 ```bash
-bun add quick-commitlint --dev
+bun add --dev quick-commitlint
 ```
 
 The package includes native executables for macOS arm64/x64, Linux arm64/x64, and Windows x64. The launcher requires Node.js 24 or 25.
@@ -75,11 +69,11 @@ npm install husky --save-dev
 npx husky init
 ```
 
-Or with Yarn:
+Or with Bun:
 
 ```bash
-yarn add husky --dev
-yarn exec husky init
+bun add --dev husky
+bunx husky init
 ```
 
 `husky init` configures Git hooks and creates an example `.husky/pre-commit` hook. Customize or remove that example hook if you do not need it.
@@ -148,14 +142,14 @@ The documentation site is an English-only Angular 22 static application in `proj
 Run it locally:
 
 ```bash
-yarn portal:start
+bun run portal:start
 ```
 
 Validate or build the prerendered site:
 
 ```bash
-yarn portal:validate
-yarn portal:build:pages
+bun run portal:validate
+bun run portal:build:pages
 ```
 
 Every public route is prerendered for SEO. Pushing a `v*` tag that points at the current `master` commit runs `.github/workflows/main.yml`, publishes the native packages, and then deploys `dist/portal/browser` to the `gh-pages` branch as the workflow's final step. The repository must provide the `ACTIONS_DEPLOY_KEY` secret and configure GitHub Pages to publish from `gh-pages`.
@@ -166,19 +160,19 @@ Requirements:
 
 - Zig 0.16.0
 - Node.js 24
-- Yarn 1.22.22
+- Bun 1.3.14
 
 ```bash
-yarn install
-yarn validate
+bun install
+bun run validate
 ```
 
 Build the publishable cross-platform package and test its tarball:
 
 ```bash
-yarn clean
-yarn validate
-yarn package
+bun run clean
+bun run validate
+bun run package
 ```
 
 Build artifacts are kept as sibling outputs with no overlap between the website and published native package:
@@ -196,12 +190,12 @@ dist/
     └── package.json         # Publishable npm manifest
 ```
 
-`yarn clean` removes the complete `dist` tree. Portal builds recreate only `dist/portal`; the release packaging scripts recreate only `dist/quick-commitlint`.
+`bun run clean` removes the complete `dist` tree. Portal builds recreate only `dist/portal`; the release packaging scripts recreate only `dist/quick-commitlint`.
 
 Run the cold-process benchmark against `@commitlint/cli`:
 
 ```bash
-yarn benchmark
+bun run benchmark
 ```
 
 <details>
@@ -210,7 +204,7 @@ yarn benchmark
 The README animation is defined in `docs/terminal-demo.tape` and rendered with the official VHS Docker image:
 
 ```bash
-yarn demo:render
+bun run demo:render
 ```
 
 The render script validates the GIF type and size, then extracts representative frames for visual inspection.

@@ -28,7 +28,7 @@ Regenerate the README GIF from the current Zig executable and verify that the an
 6. Run:
 
    ```bash
-   ZIG_GLOBAL_CACHE_DIR=/tmp/quick-commitlint-zig-cache yarn validate
+   ZIG_GLOBAL_CACHE_DIR=/tmp/quick-commitlint-zig-cache bun run validate
    git diff --check
    git diff --cached --check
    ```

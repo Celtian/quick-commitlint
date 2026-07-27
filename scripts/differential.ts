@@ -315,7 +315,7 @@ function compare(
 ): void {
   for (const testCase of corpus) {
     const nativeResult = spawnSync(native, nativeArgs, { input: testCase.message, encoding: 'utf8' });
-    const nodeResult = spawnSync(process.execPath, [commitlint, '--extends', preset], {
+    const nodeResult = spawnSync('node', [commitlint, '--extends', preset], {
       input: testCase.message,
       encoding: 'utf8',
       cwd: resolve(__dirname, '..')

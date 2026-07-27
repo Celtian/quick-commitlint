@@ -55,11 +55,11 @@ npm install husky --save-dev
 npx husky init
 ```
 
-Or with Yarn:
+Or with Bun:
 
 ```bash
-yarn add husky --dev
-yarn exec husky init
+bun add --dev husky
+bunx husky init
 ```
 
 `husky init` configures Git hooks and creates an example `.husky/pre-commit` hook. Customize or remove that example hook if you do not need it.

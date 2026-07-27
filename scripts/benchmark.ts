@@ -38,19 +38,15 @@ function measure(command: string, args: string[], input?: string): number {
 }
 
 try {
-  const packagedFile = measure(process.execPath, [packaged, messagePath]);
-  const packagedStdin = measure(
-    process.execPath,
-    [packaged],
-    'feat(benchmark): measure native startup',
-  );
+  const packagedFile = measure('node', [packaged, messagePath]);
+  const packagedStdin = measure('node', [packaged], 'feat(benchmark): measure native startup');
   const packagedConfig = measure(
-    process.execPath,
+    'node',
     [packaged, '--config', configPath],
     'feat(benchmark): measure native startup',
   );
   const nodeStdin = measure(
-    process.execPath,
+    'node',
     [commitlint, '--extends', '@commitlint/config-conventional'],
     'feat(benchmark): measure native startup',
   );
