@@ -1,26 +1,26 @@
-import"./chunk-7CGTOI24.js";var t=`# Development
+import"./chunk-7CGTOI24.js";var n=`# Development
 
-Quick Commitlint uses Zig for the published binary and Node.js tooling for development and packaging.
+Quick Commitlint uses Zig for the published binary, Bun for development and packaging scripts, and Node.js for the published launcher.
 
 ## Requirements
 
 - Zig 0.16.0
 - Node.js 24
-- Yarn 1.22.22
+- Bun 1.3.14
 
 ## Validate a change
 
 \`\`\`bash
-yarn install
-yarn validate
+bun install
+bun run validate
 \`\`\`
 
 ## Build and test the package
 
 \`\`\`bash
-yarn clean
-yarn validate
-yarn package
+bun run clean
+bun run validate
+bun run package
 \`\`\`
 
 ## Benchmark
@@ -28,10 +28,12 @@ yarn package
 Run the cold-process benchmark against \`@commitlint/cli\`:
 
 \`\`\`bash
-yarn benchmark
+bun run benchmark
 \`\`\`
 
-The documentation portal is an Angular 22 static site. Run it locally with \`yarn portal:start\` and validate it with \`yarn portal:validate\`.
+The documentation portal is an Angular 22 static site. Run it locally with \`bun run portal:start\` and validate it with \`bun run portal:validate\`.
+
+The pre-commit hook runs ESLint and Prettier fixes on staged TypeScript and Angular template files. Run \`bun run validate\` before handoff because the hook does not run the full test and build suite.
 
 ## Documentation architecture
 
@@ -44,12 +46,12 @@ Markdown is imported as text during the build and rendered by \`ngx-markdown\`, 
 Packaging changes require the release build and smoke test in addition to normal validation:
 
 \`\`\`bash
-yarn build:release
-yarn script:package-npm
-yarn package:smoke
-yarn script:package-github
+bun run build:release
+bun run script:package-npm
+bun run package:smoke
+bun run script:package-github
 git diff --check
 \`\`\`
 
 The portal builds into \`dist/portal\`; the cross-platform npm package builds into \`dist/quick-commitlint\`.
-`;export{t as default};
+`;export{n as default};
