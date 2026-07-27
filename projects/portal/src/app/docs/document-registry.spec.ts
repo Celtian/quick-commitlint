@@ -18,28 +18,42 @@ const rules = [
 ] as const;
 
 describe('document registry', () => {
+  let markdownByPath: ReadonlyMap<string, string>;
+
+  beforeAll(async () => {
+    const markdown = await Promise.all(DOCUMENTS.map((document) => document.load()));
+    markdownByPath = new Map(
+      DOCUMENTS.map((document, index) => [document.path, markdown[index]!] as const),
+    );
+  });
+
+  function markdownFor(path: string): string {
+    const markdown = markdownByPath.get(path);
+    expect(markdown).toBeDefined();
+    return markdown!;
+  }
+
   it('uses unique paths and known navigation groups', () => {
     expect(new Set(DOCUMENTS.map((document) => document.path)).size).toBe(DOCUMENTS.length);
     expect(DOCUMENTS.every((document) => DOCUMENT_GROUPS.includes(document.group))).toBe(true);
   });
 
-  it('loads Markdown with a matching level-one heading', async () => {
+  it('loads Markdown with a matching level-one heading', () => {
     for (const document of DOCUMENTS) {
-      const markdown = await document.load();
+      const markdown = markdownFor(document.path);
       expect(markdown.startsWith(`# ${document.heading}\n`)).toBe(true);
     }
   });
 
-  it('documents every supported rule and both presets', async () => {
+  it('documents every supported rule and both presets', () => {
     const ruleDocument = DOCUMENTS.find((document) => document.path === 'rules');
     const presetDocument = DOCUMENTS.find((document) => document.path === 'presets');
     expect(ruleDocument).toBeDefined();
     expect(presetDocument).toBeDefined();
 
-    const [ruleMarkdown, presetMarkdown] = await Promise.all([
-      ruleDocument!.load(),
-      presetDocument!.load(),
-    ]);
+    const ruleMarkdown = markdownFor(ruleDocument!.path);
+    const presetMarkdown = markdownFor(presetDocument!.path);
+
     for (const rule of rules) {
       expect(ruleMarkdown).toContain(`\`${rule}\``);
       expect(presetMarkdown).toContain(`\`${rule}\``);

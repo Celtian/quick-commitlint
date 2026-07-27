@@ -43,10 +43,12 @@
     "portal:start": "ng serve portal",
     "portal:lint": "ng lint portal",
     "portal:test": "ng test portal --watch=false",
+    "portal:test:coverage": "ng test portal --watch=false --coverage --coverage-reporters=cobertura",
     "portal:build": "ng build portal",
     "portal:build:pages": "ng build portal --base-href /quick-commitlint/",
     "portal:ssg:verify": "node --experimental-strip-types --no-warnings ./scripts/verify-portal-ssg.ts",
-    "portal:validate": "bun run portal:lint && bun run portal:test && bun run portal:build && bun run portal:ssg:verify"
+    "portal:validate": "bun run portal:lint && bun run portal:test && bun run portal:build && bun run portal:ssg:verify",
+    "portal:validate:coverage": "bun run portal:lint && bun run portal:test:coverage && bun run portal:build && bun run portal:ssg:verify"
   },
   "devDependencies": {
     "@angular-eslint/builder": "22.1.0",
@@ -70,6 +72,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^24",
+    "@vitest/coverage-v8": "^4.1.10",
     "angular-eslint": "22.1.0",
     "auto-changelog": "^2.6.0",
     "axe-core": "^4.12.1",

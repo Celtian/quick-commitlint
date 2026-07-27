@@ -3,11 +3,14 @@ import { provideRouter } from '@angular/router';
 import { NotFound } from './not-found';
 
 describe('NotFound', () => {
-  it('offers routes back to useful content', async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [NotFound],
       providers: [provideRouter([])],
-    }).compileComponents();
+    });
+  });
+
+  it('offers routes back to useful content', async () => {
     const fixture = TestBed.createComponent(NotFound);
     await fixture.whenStable();
     const element = fixture.nativeElement as HTMLElement;

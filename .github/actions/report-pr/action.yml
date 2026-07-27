@@ -4,6 +4,9 @@ inputs:
   coverage-file:
     description: Code coverage file
     required: true
+  portal-coverage-file:
+    description: Portal code coverage file
+    required: true
 runs:
   using: composite
   steps:
@@ -11,7 +14,7 @@ runs:
       id: finder
       uses: jwalton/gh-find-current-pr@v1
 
-    - name: 📊 Create coverage report
+    - name: 📊 Create native CLI coverage report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
         filename: ${{ inputs.coverage-file }}
@@ -24,9 +27,36 @@ runs:
         output: both
         thresholds: '70 80'
 
+    - name: 📁 Stage native CLI coverage report
+      shell: bash
+      run: mv code-coverage-results.md native-code-coverage-results.md
+
+    - name: 📊 Create portal coverage report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: ${{ inputs.portal-coverage-file }}
+        badge: true
+        fail_below_min: false
+        format: markdown
+        hide_branch_rate: true
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '70 80'
+
+    - name: 📝 Combine coverage reports
+      shell: bash
+      run: |
+        {
+          printf '## Native CLI (Zig)\n\n'
+          cat native-code-coverage-results.md
+          printf '\n## Documentation portal (Angular)\n\n'
+          cat code-coverage-results.md
+        } > combined-code-coverage-results.md
+
     - name: 💬 Add coverage PR comment
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         number: ${{ steps.finder.outputs.pr }}
         recreate: true
-        path: code-coverage-results.md
+        path: combined-code-coverage-results.md

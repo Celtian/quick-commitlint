@@ -4,26 +4,27 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { DocsLayout } from './docs-layout';
 
-function configure(matches: boolean): Promise<void> {
-  return TestBed.configureTestingModule({
-    imports: [DocsLayout],
-    providers: [
-      provideRouter([]),
-      {
-        provide: BreakpointObserver,
-        useValue: {
-          observe: () => of({ matches, breakpoints: {} } satisfies BreakpointState),
-        },
-      },
-    ],
-  }).compileComponents();
-}
-
 describe('DocsLayout', () => {
-  afterEach(() => TestBed.resetTestingModule());
+  let matches: boolean;
+
+  beforeEach(() => {
+    matches = false;
+    TestBed.configureTestingModule({
+      imports: [DocsLayout],
+      providers: [
+        provideRouter([]),
+        {
+          provide: BreakpointObserver,
+          useValue: {
+            observe: () => of({ matches, breakpoints: {} } satisfies BreakpointState),
+          },
+        },
+      ],
+    });
+  });
 
   it('uses an accessible overlay menu on small screens', async () => {
-    await configure(true);
+    matches = true;
     const fixture = TestBed.createComponent(DocsLayout);
     await fixture.whenStable();
     const element = fixture.nativeElement as HTMLElement;
@@ -35,7 +36,6 @@ describe('DocsLayout', () => {
   });
 
   it('opens persistent navigation on larger screens', async () => {
-    await configure(false);
     const fixture = TestBed.createComponent(DocsLayout);
     await fixture.whenStable();
     const element = fixture.nativeElement as HTMLElement;

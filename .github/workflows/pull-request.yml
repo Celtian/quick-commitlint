@@ -38,7 +38,7 @@ jobs:
         run: bun run package:validate
 
       - name: 🌐 Validate portal
-        run: bun run portal:validate
+        run: bun run portal:validate:coverage
 
       - name: 🛠️ Build coverage tests
         run: bun run coverage:build
@@ -51,6 +51,7 @@ jobs:
         uses: ./.github/actions/report-pr
         with:
           coverage-file: coverage/merged/kcov-merged/cobertura.xml
+          portal-coverage-file: coverage/portal/cobertura-coverage.xml
 
       - name: 📦 Build cross-platform package
         run: bun run package
