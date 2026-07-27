@@ -18,6 +18,7 @@ Regenerate the README GIF from the current Zig executable and verify that the an
    ```
 
    Approve Docker access if the official VHS image must be pulled.
+
 4. Inspect `docs/assets/terminal-demo.gif` and every PNG printed by the script with the image viewing tool.
 5. Confirm:
    - The colored help screen fits without wrapping or clipping.
@@ -28,7 +29,7 @@ Regenerate the README GIF from the current Zig executable and verify that the an
 6. Run:
 
    ```bash
-   ZIG_GLOBAL_CACHE_DIR=/tmp/quick-commitlint-zig-cache yarn validate
+   ZIG_GLOBAL_CACHE_DIR=/tmp/quick-commitlint-zig-cache bun run validate
    git diff --check
    git diff --cached --check
    ```

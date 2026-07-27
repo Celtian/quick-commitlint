@@ -4,6 +4,12 @@ inputs:
   coverage-file:
     description: Code coverage file
     required: true
+  report-name:
+    description: Coverage report heading
+    required: true
+  comment-header:
+    description: Unique sticky comment header
+    required: true
 runs:
   using: composite
   steps:
@@ -24,9 +30,21 @@ runs:
         output: both
         thresholds: '70 80'
 
+    - name: 📝 Add report heading
+      shell: bash
+      env:
+        REPORT_NAME: ${{ inputs.report-name }}
+        COMMENT_HEADER: ${{ inputs.comment-header }}
+      run: |
+        {
+          printf '## %s\n\n' "$REPORT_NAME"
+          cat code-coverage-results.md
+        } > "$RUNNER_TEMP/code-coverage-results-$COMMENT_HEADER.md"
+
     - name: 💬 Add coverage PR comment
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         number: ${{ steps.finder.outputs.pr }}
+        header: ${{ inputs.comment-header }}
         recreate: true
-        path: code-coverage-results.md
+        path: ${{ runner.temp }}/code-coverage-results-${{ inputs.comment-header }}.md

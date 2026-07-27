@@ -4,6 +4,7 @@ import {
   emptyDirSync,
   ensureDirSync,
   pathExistsSync,
+  readJsonSync,
   writeFileSync,
 } from 'fs-extra';
 import { join, resolve } from 'path';
@@ -11,7 +12,7 @@ import { join, resolve } from 'path';
 import { platforms } from './platforms';
 
 const rootDir = resolve(__dirname, '..');
-const pkg = require(join(rootDir, 'package.json'));
+const pkg = readJsonSync(join(rootDir, 'package.json'));
 
 pkg.scripts = undefined;
 pkg.devDependencies = undefined;
@@ -39,7 +40,7 @@ chmodSync(launcherPath, 0o755);
 for (const platform of platforms) {
   const source = join(rootDir, 'zig-out', 'platforms', platform.id, 'bin', platform.binary);
   if (!pathExistsSync(source)) {
-    throw new Error(`Missing ${platform.id} binary. Run "yarn build:release" first.`);
+    throw new Error(`Missing ${platform.id} binary. Run "bun run build:release" first.`);
   }
 
   const nativeDir = join(binDir, 'native', platform.id);

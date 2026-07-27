@@ -1,12 +1,29 @@
 // @ts-check
 const eslint = require('@eslint/js');
 const { defineConfig } = require('eslint/config');
+const globals = require('globals');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 
 module.exports = defineConfig([
   {
-    ignores: ['**/dist/**', '**/.angular/**'],
+    ignores: ['**/dist/**', '**/.angular/**', '**/coverage/**'],
+  },
+  {
+    files: ['**/*.{js,cjs}'],
+    extends: [eslint.configs.recommended],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: globals.node,
+    },
+  },
+  {
+    files: ['**/*.mjs'],
+    extends: [eslint.configs.recommended],
+    languageOptions: {
+      sourceType: 'module',
+      globals: globals.nodeBuiltin,
+    },
   },
   {
     files: ['**/*.ts'],

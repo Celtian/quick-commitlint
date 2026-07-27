@@ -112,4 +112,8 @@ function formatOutput(result: CommandResult): string {
   return `stdout:\n${result.stdout}\nstderr:\n${result.stderr}`;
 }
 
-type CommandResult = { stdout: string; stderr: string; status: number | null };
+interface CommandResult {
+  stdout: string;
+  stderr: string;
+  status: number | null;
+}

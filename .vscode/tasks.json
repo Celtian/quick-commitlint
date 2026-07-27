@@ -34,8 +34,8 @@
     {
       "label": "clean",
       "type": "shell",
-      "command": "yarn",
-      "args": ["clean"],
+      "command": "bun",
+      "args": ["run", "clean"],
       "problemMatcher": []
     }
   ]

@@ -4,16 +4,23 @@ import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 const native = resolve(__dirname, '..', 'zig-out', 'bin', 'quick-commitlint');
-const expectedVersion = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf8')).version;
+const expectedVersion = JSON.parse(
+  readFileSync(resolve(__dirname, '..', 'package.json'), 'utf8'),
+).version;
 const temp = mkdtempSync(join(tmpdir(), 'quick-commitlint-integration-'));
 const lintStatus = '\x1b[36m...\x1b[0m\x1b[2mChecking commit message…\x1b[0m\n';
 
 function run(args: string[], input?: string | Buffer, cwd = temp) {
-  return spawnSync(native, args, { input, cwd, encoding: input instanceof Buffer ? undefined : 'utf8' });
+  return spawnSync(native, args, {
+    input,
+    cwd,
+    encoding: input instanceof Buffer ? undefined : 'utf8',
+  });
 }
 
 function expectStatus(actual: number | null, expected: number, context: string): void {
-  if (actual !== expected) throw new Error(`${context}: expected status ${expected}, received ${actual}`);
+  if (actual !== expected)
+    throw new Error(`${context}: expected status ${expected}, received ${actual}`);
 }
 
 function expectTimedSummary(output: string, context: string): void {
@@ -41,7 +48,11 @@ function expectReportSpacing(output: string, context: string, hasIssues: boolean
     throw new Error(`${context}: successful report must follow lint status without a blank line.`);
   }
   const summaryOffset = hasIssues ? report.indexOf('\n\n', 1) + 2 : 0;
-  if ((hasIssues && summaryOffset === 1) || report[summaryOffset] === ' ' || report[summaryOffset] === '\n') {
+  if (
+    (hasIssues && summaryOffset === 1) ||
+    report[summaryOffset] === ' ' ||
+    report[summaryOffset] === '\n'
+  ) {
     throw new Error(`${context}: unexpected whitespace before summary.`);
   }
   if (!report.endsWith('\n') || report.endsWith('\n\n')) {
@@ -66,7 +77,8 @@ try {
   if (invalid.stdout !== '') throw new Error('Lint results must be written to stderr.');
   const invalidOutput = String(invalid.stderr);
   if (!invalidOutput.includes('\x1b[31m✖\x1b[0m')) throw new Error('Error symbol is not red.');
-  if (!invalidOutput.includes('\x1b[36m[type-enum]\x1b[0m')) throw new Error('Rule identifier is not cyan.');
+  if (!invalidOutput.includes('\x1b[36m[type-enum]\x1b[0m'))
+    throw new Error('Rule identifier is not cyan.');
   if (!invalidOutput.includes('1 error') || invalidOutput.includes('1 errors')) {
     throw new Error('Error summary has incorrect singularization.');
   }
@@ -100,9 +112,15 @@ try {
     subjectFullStopIndex === -1 ||
     typeEnumIndex === -1 ||
     warningIndex === -1 ||
-    !(subjectCaseIndex < subjectFullStopIndex && subjectFullStopIndex < typeEnumIndex && typeEnumIndex < warningIndex)
+    !(
+      subjectCaseIndex < subjectFullStopIndex &&
+      subjectFullStopIndex < typeEnumIndex &&
+      typeEnumIndex < warningIndex
+    )
   ) {
-    throw new Error('Mixed severity report must preserve error rule order and display warnings last.');
+    throw new Error(
+      'Mixed severity report must preserve error rule order and display warnings last.',
+    );
   }
 
   const messagePath = join(temp, 'COMMIT_EDITMSG');
@@ -117,7 +135,11 @@ try {
 
   const explicit = join(temp, 'conventional.json');
   writeFileSync(explicit, '{"preset":"conventional"}\n');
-  expectStatus(run(['--config', explicit], 'chore: publish', child).status, 0, 'explicit config precedence');
+  expectStatus(
+    run(['--config', explicit], 'chore: publish', child).status,
+    0,
+    'explicit config precedence',
+  );
 
   const malformed = join(temp, 'malformed.json');
   writeFileSync(malformed, '{"unknown":true}\n');
@@ -130,7 +152,8 @@ try {
   expectOperationalFailure(String(invalidUtf8.stderr), 'invalid UTF-8');
   const unknown = run(['--unknown']);
   expectStatus(unknown.status, 2, 'unknown CLI option');
-  if (!String(unknown.stderr).includes('\x1b[31merror\x1b[0m')) throw new Error('CLI error is not red.');
+  if (!String(unknown.stderr).includes('\x1b[31merror\x1b[0m'))
+    throw new Error('CLI error is not red.');
   if (String(unknown.stderr).includes('Checking commit message')) {
     throw new Error('Invalid argument output must not include lint status.');
   }
@@ -158,9 +181,12 @@ try {
 
   const help = run(['--help']);
   expectStatus(help.status, 0, 'help');
-  if (!String(help.stdout).includes('\x1b[96mQuick Commitlint\x1b[0m')) throw new Error('Help title is not cyan.');
-  if (!String(help.stdout).includes('\x1b[33mUsage:\x1b[0m')) throw new Error('Help section is not yellow.');
-  if (!String(help.stdout).includes('\x1b[32m-c, --config <path>\x1b[0m')) throw new Error('Help option is not green.');
+  if (!String(help.stdout).includes('\x1b[96mQuick Commitlint\x1b[0m'))
+    throw new Error('Help title is not cyan.');
+  if (!String(help.stdout).includes('\x1b[33mUsage:\x1b[0m'))
+    throw new Error('Help section is not yellow.');
+  if (!String(help.stdout).includes('\x1b[32m-c, --config <path>\x1b[0m'))
+    throw new Error('Help option is not green.');
   if (String(help.stderr).includes('Checking commit message')) {
     throw new Error('Help output must not include lint status.');
   }

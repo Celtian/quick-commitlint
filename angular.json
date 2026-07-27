@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "yarn",
+    "packageManager": "bun",
     "schematicCollections": ["angular-eslint"],
     "analytics": false
   },
@@ -84,7 +84,19 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "runnerConfig": "vitest.config.ts",
+            "coverageInclude": ["projects/portal/src/app/**/*.ts"],
+            "coverageExclude": ["projects/portal/src/app/**/*.spec.ts"],
+            "coverageReporters": ["text-summary", "cobertura"],
+            "coverageThresholds": {
+              "statements": 75,
+              "branches": 75,
+              "functions": 75,
+              "lines": 75
+            }
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

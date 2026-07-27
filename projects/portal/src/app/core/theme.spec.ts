@@ -20,8 +20,6 @@ describe('Theme', () => {
     useSystemTheme(false);
   });
 
-  afterEach(() => TestBed.resetTestingModule());
-
   it('restores and persists an explicit preference', () => {
     localStorage.setItem(THEME_STORAGE_KEY, 'dark');
     const service = TestBed.inject(Theme);
