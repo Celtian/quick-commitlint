@@ -43,7 +43,7 @@
     "portal:start": "ng serve portal",
     "portal:lint": "ng lint portal",
     "portal:test": "ng test portal --watch=false",
-    "portal:test:coverage": "ng test portal --watch=false --coverage --coverage-reporters=cobertura",
+    "portal:test:coverage": "ng test portal --watch=false --coverage",
     "portal:build": "ng build portal",
     "portal:build:pages": "ng build portal --base-href /quick-commitlint/",
     "portal:ssg:verify": "node --experimental-strip-types --no-warnings ./scripts/verify-portal-ssg.ts",

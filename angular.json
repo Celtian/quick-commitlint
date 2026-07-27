@@ -88,7 +88,14 @@
           "options": {
             "runnerConfig": "vitest.config.ts",
             "coverageInclude": ["projects/portal/src/app/**/*.ts"],
-            "coverageExclude": ["projects/portal/src/app/**/*.spec.ts"]
+            "coverageExclude": ["projects/portal/src/app/**/*.spec.ts"],
+            "coverageReporters": ["text-summary", "cobertura"],
+            "coverageThresholds": {
+              "statements": 75,
+              "branches": 75,
+              "functions": 75,
+              "lines": 75
+            }
           }
         },
         "lint": {
