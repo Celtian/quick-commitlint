@@ -72,6 +72,15 @@ quick-commitlint "$1"
 
 Husky adds local `node_modules/.bin` commands to the hook's `PATH`, so this runs the installed Quick Commitlint development dependency. Git supplies the proposed commit-message file as `$1`.
 
+You can also make the package-manager lookup explicit. Choose the command that matches your project:
+
+- npm: `npm exec --no -- quick-commitlint "$1"`
+- pnpm: `pnpm exec quick-commitlint "$1"`
+- Yarn: `yarn run quick-commitlint "$1"`
+- Bun: `bunx --no-install quick-commitlint "$1"`
+
+These alternatives prefer the project-installed, lockfile-controlled version and do not download Quick Commitlint when the executable is missing. A missing installation or misspelled command therefore fails the hook instead of silently fetching a package. Using the project package manager also supports manager-specific dependency resolution, including Yarn Plug'n'Play. The bare command remains the simplest option for standard `node_modules` installations because Husky already adds local binaries to `PATH`.
+
 Make sure the hook file is executable when it is managed directly by Git.
 
 ## Introduce a rule gradually
