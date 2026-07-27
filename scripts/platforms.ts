@@ -1,10 +1,10 @@
-export type Platform = {
+export interface Platform {
   id: string;
   os: NodeJS.Platform;
   arch: NodeJS.Architecture;
   target: string;
   binary: string;
-};
+}
 
 export const platforms: Platform[] = [
   {

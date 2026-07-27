@@ -10,8 +10,9 @@
   "private": false,
   "description": "A very fast native commit message linter built with Zig",
   "scripts": {
-    "validate": "bun run format:check && bun run typecheck:scripts && bun run test:launcher && bun run build && bun run test && bun run test:integration && bun run test:differential && bun run portal:validate",
-    "format:check": "zig fmt --check src/root.zig src/main.zig src/cli.zig src/config.zig src/lint.zig build.zig",
+    "validate": "bun run format:check && bun run lint:javascript && bun run typecheck:scripts && bun run test:launcher && bun run build && bun run test && bun run test:integration && bun run test:differential && bun run portal:validate",
+    "format:check": "zig fmt --check src/root.zig src/main.zig src/cli.zig src/config.zig src/lint.zig build.zig && prettier --check .",
+    "lint:javascript": "eslint \"**/*.{js,cjs,mjs}\"",
     "typecheck:scripts": "tsc --project scripts/tsconfig.json",
     "build": "zig build",
     "build:platforms": "bun ./scripts/build-platforms.ts",
@@ -44,8 +45,7 @@
     "portal:build": "ng build portal",
     "portal:build:pages": "ng build portal --base-href /quick-commitlint/",
     "portal:ssg:verify": "node --experimental-strip-types --no-warnings ./scripts/verify-portal-ssg.ts",
-    "portal:format:check": "prettier --check README.md package.json \"projects/portal/src/**/*.{ts,html,css,md}\" projects/portal/.postcssrc.json angular.json eslint.config.js projects/portal/eslint.config.js npm/quick-commitlint.js scripts/verify-portal-ssg.ts scripts/build-platforms.ts scripts/platforms.ts scripts/quick-commitlint.test.cjs scripts/package-npm.ts scripts/package-github.ts scripts/smoke-package.ts scripts/benchmark.ts \".github/workflows/*.yml\"",
-    "portal:validate": "bun run portal:format:check && bun run portal:lint && bun run portal:test && bun run portal:build && bun run portal:ssg:verify"
+    "portal:validate": "bun run portal:lint && bun run portal:test && bun run portal:build && bun run portal:ssg:verify"
   },
   "devDependencies": {
     "@angular-eslint/builder": "22.1.0",
@@ -74,8 +74,10 @@
     "axe-core": "^4.12.1",
     "eslint": "^10.8.0",
     "fs-extra": "^11.4.0",
+    "globals": "^17.7.0",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "lint-staged": "^17.0.8",
     "marked": "^18.0.7",
     "ngx-markdown": "^22.0.0",
     "ngx-scrolltop": "^22.0.0",

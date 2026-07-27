@@ -4,6 +4,7 @@ import {
   emptyDirSync,
   ensureDirSync,
   pathExistsSync,
+  readJsonSync,
   writeFileSync,
 } from 'fs-extra';
 import { join, resolve } from 'path';
@@ -11,7 +12,7 @@ import { join, resolve } from 'path';
 import { platforms } from './platforms';
 
 const rootDir = resolve(__dirname, '..');
-const pkg = require(join(rootDir, 'package.json'));
+const pkg = readJsonSync(join(rootDir, 'package.json'));
 
 pkg.scripts = undefined;
 pkg.devDependencies = undefined;

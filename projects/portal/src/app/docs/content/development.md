@@ -33,6 +33,8 @@ bun run benchmark
 
 The documentation portal is an Angular 22 static site. Run it locally with `bun run portal:start` and validate it with `bun run portal:validate`.
 
+The pre-commit hook runs ESLint and Prettier fixes on staged TypeScript and Angular template files. Run `bun run validate` before handoff because the hook does not run the full test and build suite.
+
 ## Documentation architecture
 
 Documentation Markdown lives in `projects/portal/src/app/docs/content`. Each public document is registered once in the typed document registry; Angular uses that registry for routes, sidebar navigation, SEO metadata, and prerender routes.

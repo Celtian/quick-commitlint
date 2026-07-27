@@ -53,15 +53,7 @@ jobs:
         run: bun run package
 
       - name: 🔎 Verify artifact layout
-        run: |
-          test -f dist/portal/browser/index.html
-          test -x dist/quick-commitlint/bin/quick-commitlint.js
-          test -x dist/quick-commitlint/bin/native/darwin-arm64/quick-commitlint
-          test -x dist/quick-commitlint/bin/native/darwin-x64/quick-commitlint
-          test -x dist/quick-commitlint/bin/native/linux-arm64/quick-commitlint
-          test -x dist/quick-commitlint/bin/native/linux-x64/quick-commitlint
-          test -f dist/quick-commitlint/bin/native/win32-x64/quick-commitlint.exe
-          test -f dist/quick-commitlint/package.json
+        uses: ./.github/actions/verify-artifact-layout
 
       - name: 🏁 Benchmark performance gate
         run: bun run benchmark
