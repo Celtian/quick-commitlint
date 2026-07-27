@@ -10,7 +10,8 @@
   "private": false,
   "description": "A very fast native commit message linter built with Zig",
   "scripts": {
-    "validate": "bun run format:check && bun run lint:javascript && bun run typecheck:scripts && bun run test:launcher && bun run build && bun run test && bun run test:integration && bun run test:differential && bun run portal:validate",
+    "validate": "bun run package:validate && bun run portal:validate",
+    "package:validate": "bun run format:check && bun run lint:javascript && bun run typecheck:scripts && bun run test:launcher && bun run build && bun run test && bun run test:integration && bun run test:differential",
     "format:check": "zig fmt --check src/root.zig src/main.zig src/cli.zig src/config.zig src/lint.zig build.zig && prettier --check .",
     "lint:javascript": "eslint \"**/*.{js,cjs,mjs}\"",
     "typecheck:scripts": "tsc --project scripts/tsconfig.json",

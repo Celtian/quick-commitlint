@@ -34,8 +34,11 @@ jobs:
       - name: 🧹 Clean
         run: bun run clean
 
-      - name: ✅ Validate
-        run: bun run validate
+      - name: 📦 Validate package
+        run: bun run package:validate
+
+      - name: 🌐 Validate portal
+        run: bun run portal:validate
 
       - name: 🛠️ Build coverage tests
         run: bun run coverage:build
