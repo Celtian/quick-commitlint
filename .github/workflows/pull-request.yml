@@ -40,18 +40,27 @@ jobs:
       - name: 🌐 Validate portal
         run: bun run portal:validate:coverage
 
+      - name: 📊 Report portal coverage
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: ./.github/actions/report-pr
+        with:
+          coverage-file: coverage/portal/cobertura-coverage.xml
+          report-name: Documentation portal (Angular)
+          comment-header: portal-coverage-report
+
       - name: 🛠️ Build coverage tests
         run: bun run coverage:build
 
       - name: 🧪 Generate coverage
         uses: ./.github/actions/generate-coverage
 
-      - name: 📊 Report coverage
+      - name: 📊 Report native coverage
         if: github.event.pull_request.head.repo.full_name == github.repository
         uses: ./.github/actions/report-pr
         with:
           coverage-file: coverage/merged/kcov-merged/cobertura.xml
-          portal-coverage-file: coverage/portal/cobertura-coverage.xml
+          report-name: Native CLI (Zig)
+          comment-header: native-coverage-report
 
       - name: 📦 Build cross-platform package
         run: bun run package

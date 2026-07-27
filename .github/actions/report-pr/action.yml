@@ -4,8 +4,11 @@ inputs:
   coverage-file:
     description: Code coverage file
     required: true
-  portal-coverage-file:
-    description: Portal code coverage file
+  report-name:
+    description: Coverage report heading
+    required: true
+  comment-header:
+    description: Unique sticky comment header
     required: true
 runs:
   using: composite
@@ -14,7 +17,7 @@ runs:
       id: finder
       uses: jwalton/gh-find-current-pr@v1
 
-    - name: 📊 Create native CLI coverage report
+    - name: 📊 Create coverage report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
         filename: ${{ inputs.coverage-file }}
@@ -27,36 +30,21 @@ runs:
         output: both
         thresholds: '70 80'
 
-    - name: 📁 Stage native CLI coverage report
+    - name: 📝 Add report heading
       shell: bash
-      run: mv code-coverage-results.md native-code-coverage-results.md
-
-    - name: 📊 Create portal coverage report
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: ${{ inputs.portal-coverage-file }}
-        badge: true
-        fail_below_min: false
-        format: markdown
-        hide_branch_rate: true
-        hide_complexity: true
-        indicators: true
-        output: both
-        thresholds: '70 80'
-
-    - name: 📝 Combine coverage reports
-      shell: bash
+      env:
+        REPORT_NAME: ${{ inputs.report-name }}
+        COMMENT_HEADER: ${{ inputs.comment-header }}
       run: |
         {
-          printf '## Native CLI (Zig)\n\n'
-          cat native-code-coverage-results.md
-          printf '\n## Documentation portal (Angular)\n\n'
+          printf '## %s\n\n' "$REPORT_NAME"
           cat code-coverage-results.md
-        } > combined-code-coverage-results.md
+        } > "$RUNNER_TEMP/code-coverage-results-$COMMENT_HEADER.md"
 
     - name: 💬 Add coverage PR comment
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         number: ${{ steps.finder.outputs.pr }}
+        header: ${{ inputs.comment-header }}
         recreate: true
-        path: combined-code-coverage-results.md
+        path: ${{ runner.temp }}/code-coverage-results-${{ inputs.comment-header }}.md
