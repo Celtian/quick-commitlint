@@ -30,6 +30,32 @@
 | 🔒 **Strict and predictable**    | Rejects malformed JSON, unknown options, duplicate keys, and invalid UTF-8.       |
 | 🌍 **International subjects**    | Counts Unicode code points while keeping syntax checks fast and ASCII-based.      |
 
+## 🔎 Quick Commitlint vs Commitlint
+
+This comparison uses `@commitlint/cli` 21.2.1 and the `@commitlint/config-conventional` and `@commitlint/config-angular` 21.2.0 packages pinned by this repository.
+
+| Area                       | Quick Commitlint                                                                            | Commitlint                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Conventional preset        | Built in as `conventional` and used by default                                              | Available through `@commitlint/config-conventional` or the CLI's `--default-config` fallback            |
+| Angular preset             | Built in as `angular` and selected in strict JSON                                           | Available as the shareable `@commitlint/config-angular` package                                         |
+| Runtime and dependencies   | Small Node.js launcher plus a bundled native Zig executable; no runtime npm dependencies    | Node.js CLI with its JavaScript configuration, parsing, formatting, and rule dependencies               |
+| Configuration              | One strict `.quick-commitlint.json` format, two presets, and 14 supported rule overrides    | JS, TS, JSON, YAML, and package configuration with shareable configs, plugins, and custom behavior      |
+| Inputs and ignored commits | Reads standard input or one commit-message file and lints every message                     | Also reads Git ranges, tags, the last commit, and edit/environment files; supports default ignores      |
+| Best fit                   | Projects using the included presets that value predictable configuration and native linting | Projects needing broader rules, custom parsers, plugins, shareable configs, ignores, or history linting |
+
+The supported Conventional and Angular defaults are protected by differential tests, but Quick Commitlint is not a drop-in replacement for every Commitlint setup. Read the [full compatibility guide](https://celtian.github.io/quick-commitlint/docs/compatibility/) for the exact boundary.
+
+## 📊 Performance
+
+Reference cold-process benchmark:
+
+| Preset       | Quick Commitlint median | Commitlint median | Improvement |
+| ------------ | ----------------------: | ----------------: | ----------: |
+| Conventional |               20.686 ms |        250.597 ms |       12.1× |
+| Angular      |               20.535 ms |        250.228 ms |       12.2× |
+
+These are median wall-clock results from 40 measured launches after 3 warmups on Linux x64 under WSL2, using a 13th Gen Intel Core i9-13900H and Node.js 24.18.0. See the dedicated [Performance documentation](https://celtian.github.io/quick-commitlint/docs/performance/) for the complete method and reproduction steps.
+
 ## 🚀 Install
 
 With npm:

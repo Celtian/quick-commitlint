@@ -25,11 +25,15 @@ bun run package
 
 ## Benchmark
 
-Run the cold-process benchmark against `@commitlint/cli`:
+Run the cold-process benchmark against `@commitlint/cli` with both the Conventional and Angular presets:
 
 ```bash
 bun run benchmark
 ```
+
+The script reports the environment, median wall-clock time for each tool, and the relative improvement after three warmups and 40 measured launches per command by default. Set `BENCHMARK_ITERATIONS` to change the measured sample count.
+
+The current reference results and methodology are published on the [Performance](docs/performance/) page.
 
 The documentation portal is an Angular 22 static site. Run it locally with `bun run portal:start` and validate it with `bun run portal:validate`.
 

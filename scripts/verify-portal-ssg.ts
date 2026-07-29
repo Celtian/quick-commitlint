@@ -65,6 +65,13 @@ const pages: readonly ExpectedPage[] = [
     description: 'Reference the rules supported by Quick Commitlint and its built-in presets.',
   },
   {
+    route: 'docs/performance',
+    heading: 'Performance',
+    title: 'Performance | Quick Commitlint',
+    description:
+      'Compare Quick Commitlint and Commitlint cold-process performance for Conventional and Angular presets.',
+  },
+  {
     route: 'docs/compatibility',
     heading: 'Commitlint compatibility',
     title: 'Commitlint compatibility | Quick Commitlint',
@@ -147,6 +154,14 @@ async function main(): Promise<void> {
     'preset reference must document Conventional',
   );
   assert.ok(presetReference.includes('Angular'), 'preset reference must document Angular');
+
+  const performanceReference = renderedPages.get('docs/performance') ?? '';
+  for (const result of ['20.686 ms', '250.597 ms', '12.1×', '20.535 ms', '250.228 ms', '12.2×']) {
+    assert.ok(
+      performanceReference.includes(result),
+      `performance reference must include ${result}`,
+    );
+  }
 
   await readFile(path.join(outputDirectory, 'robots.txt'), 'utf8');
   const sitemap = await readFile(path.join(outputDirectory, 'sitemap.xml'), 'utf8');

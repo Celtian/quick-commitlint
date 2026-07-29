@@ -1,6 +1,6 @@
 import { spawnSync } from 'child_process';
 import { writeFileSync, mkdtempSync, rmSync } from 'fs';
-import { tmpdir } from 'os';
+import { arch, cpus, platform, tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 const root = resolve(__dirname, '..');
@@ -9,12 +9,15 @@ const commitlint = resolve(root, 'node_modules', '@commitlint', 'cli', 'cli.js')
 const iterations = Number(process.env.BENCHMARK_ITERATIONS ?? 40);
 const temp = mkdtempSync(join(tmpdir(), 'quick-commitlint-benchmark-'));
 const messagePath = join(temp, 'COMMIT_EDITMSG');
-const configPath = join(temp, 'quick-commitlint.json');
-writeFileSync(messagePath, 'feat(benchmark): measure native startup\n');
+const conventionalConfigPath = join(temp, 'quick-commitlint-conventional.json');
+const angularConfigPath = join(temp, 'quick-commitlint-angular.json');
+const message = 'feat(benchmark): measure native startup';
+writeFileSync(messagePath, `${message}\n`);
 writeFileSync(
-  configPath,
+  conventionalConfigPath,
   '{"preset":"conventional","rules":{"header-max-length":[2,"always",100]}}\n',
 );
+writeFileSync(angularConfigPath, '{"preset":"angular"}\n');
 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -38,25 +41,53 @@ function measure(command: string, args: string[], input?: string): number {
 }
 
 try {
+  const nodeVersionResult = spawnSync('node', ['--version'], { encoding: 'utf8' });
+  if (nodeVersionResult.status !== 0) throw new Error('Could not determine the Node.js version.');
+  const cpu = cpus()[0]?.model ?? 'unknown CPU';
   const packagedFile = measure('node', [packaged, messagePath]);
-  const packagedStdin = measure('node', [packaged], 'feat(benchmark): measure native startup');
-  const packagedConfig = measure(
+  const quickConventional = measure('node', [packaged], message);
+  const quickConventionalConfig = measure(
     'node',
-    [packaged, '--config', configPath],
-    'feat(benchmark): measure native startup',
+    [packaged, '--config', conventionalConfigPath],
+    message,
   );
-  const nodeStdin = measure(
+  const commitlintConventional = measure(
     'node',
     [commitlint, '--extends', '@commitlint/config-conventional'],
-    'feat(benchmark): measure native startup',
+    message,
   );
-  const ratio = nodeStdin / packagedStdin;
+  const quickAngular = measure('node', [packaged, '--config', angularConfigPath], message);
+  const commitlintAngular = measure(
+    'node',
+    [commitlint, '--extends', '@commitlint/config-angular'],
+    message,
+  );
+  const conventionalRatio = commitlintConventional / quickConventional;
+  const angularRatio = commitlintAngular / quickAngular;
+
+  console.log(
+    `environment: ${platform()} ${arch()}, ${cpu}, Node ${nodeVersionResult.stdout.trim()}`,
+  );
+  console.log(`measured iterations per command: ${iterations} after 3 warmups`);
   console.log(`quick-commitlint file median: ${packagedFile.toFixed(3)} ms`);
-  console.log(`quick-commitlint stdin median: ${packagedStdin.toFixed(3)} ms`);
-  console.log(`quick-commitlint JSON config median: ${packagedConfig.toFixed(3)} ms`);
-  console.log(`commitlint stdin median: ${nodeStdin.toFixed(3)} ms`);
-  console.log(`cold-process improvement: ${ratio.toFixed(1)}x`);
-  if (ratio < 10) throw new Error(`Performance gate failed: ${ratio.toFixed(1)}x is below 10x.`);
+  console.log(`quick-commitlint conventional median: ${quickConventional.toFixed(3)} ms`);
+  console.log(
+    `quick-commitlint conventional JSON config median: ${quickConventionalConfig.toFixed(3)} ms`,
+  );
+  console.log(`commitlint conventional median: ${commitlintConventional.toFixed(3)} ms`);
+  console.log(`conventional cold-process improvement: ${conventionalRatio.toFixed(1)}x`);
+  console.log(`quick-commitlint angular median: ${quickAngular.toFixed(3)} ms`);
+  console.log(`commitlint angular median: ${commitlintAngular.toFixed(3)} ms`);
+  console.log(`angular cold-process improvement: ${angularRatio.toFixed(1)}x`);
+
+  for (const [preset, ratio] of [
+    ['conventional', conventionalRatio],
+    ['angular', angularRatio],
+  ] as const) {
+    if (ratio < 10) {
+      throw new Error(`Performance gate failed for ${preset}: ${ratio.toFixed(1)}x is below 10x.`);
+    }
+  }
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }
