@@ -61,4 +61,21 @@ describe('document registry', () => {
     expect(presetMarkdown).toContain('`conventional`');
     expect(presetMarkdown).toContain('`angular`');
   });
+
+  it('identifies the commitlint CLI and both reference preset versions', () => {
+    const compatibilityMarkdown = markdownFor('compatibility');
+    const performanceMarkdown = markdownFor('performance');
+
+    expect(compatibilityMarkdown).toContain('`@commitlint/cli` 21.2.1');
+    expect(compatibilityMarkdown).toContain('`@commitlint/config-conventional` 21.2.0');
+    expect(compatibilityMarkdown).toContain('`@commitlint/config-angular` 21.2.0');
+    expect(compatibilityMarkdown).toContain('[Performance](docs/performance/)');
+    expect(performanceMarkdown).toContain('## Reference cold-process benchmark');
+    expect(performanceMarkdown).toMatch(
+      /\|\s+Conventional\s+\|\s+\d+\.\d{3} ms\s+\|\s+\d+\.\d{3} ms\s+\|\s+\d+\.\d×\s+\|/u,
+    );
+    expect(performanceMarkdown).toMatch(
+      /\|\s+Angular\s+\|\s+\d+\.\d{3} ms\s+\|\s+\d+\.\d{3} ms\s+\|\s+\d+\.\d×\s+\|/u,
+    );
+  });
 });

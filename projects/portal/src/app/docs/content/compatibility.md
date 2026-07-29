@@ -1,33 +1,43 @@
 # Commitlint compatibility
 
-Quick Commitlint is a focused native implementation of a tested subset of commitlint behavior. It is designed for projects that want the included Conventional or Angular rules without loading commitlint's JavaScript configuration and rule stack for every commit.
+Quick Commitlint is a focused native implementation of a tested subset of Commitlint behavior. It is designed for projects that want the included Conventional or Angular rules without loading Commitlint's JavaScript configuration and rule stack for every commit.
 
-It is not a drop-in replacement for every commitlint configuration.
+The comparison baseline is `@commitlint/cli` 21.2.1 with `@commitlint/config-conventional` 21.2.0 and `@commitlint/config-angular` 21.2.0, matching the packages pinned by this repository. Consult Commitlint's official [CLI](https://commitlint.js.org/reference/cli.html), [configuration](https://commitlint.js.org/reference/configuration.html), and [plugin](https://commitlint.js.org/reference/plugins.html) references for its complete feature set.
 
-## Supported behavior
+Quick Commitlint is not a drop-in replacement for every Commitlint configuration.
 
-- Built-in `conventional` and `angular` presets matching the local commitlint 21.2 reference packages
-- The 14 rules listed in the [Rules reference](docs/rules/)
+## At a glance
+
+| Area                  | Quick Commitlint                                                                                                    | Commitlint                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Runtime               | Small Node.js launcher selects a bundled native Zig linting executable; the package has no runtime npm dependencies | Node.js CLI with JavaScript packages for loading configuration, parsing, formatting, and linting         |
+| Default configuration | Uses the built-in `conventional` preset when no configuration is found                                              | Normally loads discovered or supplied rules; `--default-config` can provide a Conventional fallback      |
+| Configuration files   | Strict `.quick-commitlint.json` JSON                                                                                | JS, TS, JSON, YAML, extensionless, and `package.json` or `package.yaml` configuration                    |
+| Presets               | Exactly `conventional` and `angular`, embedded in the executable                                                    | Shareable npm or local configurations composed through `extends`                                         |
+| Rules                 | Fixed 14-rule subset with static JSON values                                                                        | Larger built-in rule set plus plugins, local rules, and function or promise values                       |
+| Parser                | Fixed native parser                                                                                                 | Configurable parser presets and parser options                                                           |
+| Ignores               | Lints every supplied message                                                                                        | Provides default generated-message ignores and custom ignore functions                                   |
+| Inputs                | Standard input or one commit-message file                                                                           | Standard input, edit or environment files, the last commit, Git ranges, and ranges from the last tag     |
+| Output                | Colored lint report on stderr; help and version on stdout                                                           | Configurable colors, formatters, quiet and verbose modes, help URLs, and strict warning/error exit codes |
+| Platforms             | Bundled for macOS arm64/x64, Linux arm64/x64, and Windows x64                                                       | Runs where its supported Node.js and Git versions are available                                          |
+
+## Conventional and Angular presets
+
+| Mode         | Quick Commitlint                                               | Commitlint reference                     | Tested compatibility                                                                    |
+| ------------ | -------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------- |
+| Conventional | Built-in `conventional` preset, active by default              | `@commitlint/config-conventional` 21.2.0 | Supported preset defaults and diagnostics are compared through `@commitlint/cli` 21.2.1 |
+| Angular      | Built-in `angular` preset, selected with `"preset": "angular"` | `@commitlint/config-angular` 21.2.0      | Supported preset defaults and diagnostics are compared through `@commitlint/cli` 21.2.1 |
+
+The differential corpus currently exercises 66 Conventional and Angular cases. It checks pass/fail behavior and expected diagnostics for the supported preset rules. This protects the intended compatibility boundary; it does not claim parity for Commitlint rules or features that Quick Commitlint does not implement.
+
+Within that boundary, Quick Commitlint supports:
+
+- The 14-rule union listed in the [Rules reference](docs/rules/)
+- The complete embedded defaults documented in the [Presets reference](docs/presets/)
 - Commitlint-style severity, condition, and value tuples
 - Conventional header, body, footer, scope, subject, and breaking-marker checks
-- JSON rule overrides layered on a preset
+- JSON rule overrides layered on either preset
 - Warning-only success and rule-error failure statuses
-
-The repository runs differential cases against `@commitlint/cli`, `@commitlint/config-conventional`, and `@commitlint/config-angular` 21.2 to protect the intended preset behavior.
-
-## Deliberate differences
-
-| Area                  | Quick Commitlint                                                    | Full commitlint                                                  |
-| --------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Runtime               | Small Node.js launcher plus a native Zig linting executable         | Node.js                                                          |
-| Default configuration | Built-in `conventional` when no config is found                     | Normally requires a discovered or supplied configuration         |
-| Configuration files   | Strict `.quick-commitlint.json` JSON                                | Multiple JS/TS/JSON/YAML formats through its configuration stack |
-| Presets               | Exactly `conventional` and `angular`                                | Shareable npm configurations and `extends`                       |
-| Rules                 | Fixed 14-rule subset                                                | Larger rule set plus plugins and local rules                     |
-| Rule values           | Static JSON values                                                  | Values may be supplied by JavaScript functions and promises      |
-| Parser                | Fixed native parser                                                 | Configurable parser presets and parser options                   |
-| Ignores               | Every message is linted                                             | Default and custom ignore functions are available                |
-| Output                | Colored report is always written to stderr; help/version use stdout | More output and formatting controls                              |
 
 ## Configuration features not supported
 
@@ -46,13 +56,15 @@ Quick Commitlint does not implement:
 
 Adding any unknown top-level key or rule is an error rather than being silently ignored.
 
-## Parser differences
+## Parser and ignore differences
 
 The native parser expects an exact `: ` header separator and an ASCII alphanumeric or underscore type. It does not provide custom header patterns, custom scope delimiters, or multiple-scope parsing. Only a recognized final paragraph becomes the footer.
 
 Generated commit messages—merge, revert, fixup, tag, and initial messages—are linted. If a workflow wants to ignore them, it must avoid invoking Quick Commitlint for those messages or preprocess the input before calling it.
 
-## Choosing Quick Commitlint
+For measured Conventional and Angular cold-start numbers, methodology, and reproduction steps, see the dedicated [Performance](docs/performance/) page.
+
+## Choosing between them
 
 Quick Commitlint is a good fit when:
 
@@ -61,4 +73,4 @@ Quick Commitlint is a good fit when:
 - fast native linting and no additional runtime npm dependencies matter;
 - macOS arm64/x64, Linux arm64/x64, or Windows x64 is the deployment platform.
 
-Use full commitlint when the project depends on shareable npm configurations, plugins, custom parsers, custom ignores, or rules outside the supported subset.
+Use Commitlint when the project depends on shareable npm configurations, plugins, custom parsers, custom ignores, Git-range linting, or rules outside the supported subset.

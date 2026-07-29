@@ -83,6 +83,16 @@ export const DOCUMENTS = [
     load: () => import('./content/cli.md').then((module) => module.default),
   },
   {
+    path: 'performance',
+    label: 'Performance',
+    group: 'Reference',
+    title: 'Performance | Quick Commitlint',
+    description:
+      'Compare Quick Commitlint and Commitlint cold-process performance for Conventional and Angular presets.',
+    heading: 'Performance',
+    load: () => import('./content/performance.md').then((module) => module.default),
+  },
+  {
     path: 'compatibility',
     label: 'Commitlint compatibility',
     group: 'Reference',
