@@ -1,0 +1,38 @@
+README.md
+  s_3cc197aaf3fba2::t_cc04fa351e156d 3-12,201-203
+  s_3cc197aaf3fba2::t_043a303edb9e11 204
+projects/portal/src/app/core/seo-title-strategy.ts
+  s_3cc197aaf3fba2::t_cc04fa351e156d 5,29-38
+scripts/verify-portal-ssg.ts
+  s_3cc197aaf3fba2::t_cc04fa351e156d 14-15,130-135,174-179,188
+projects/portal/src/app/app.spec.ts
+  s_3cc197aaf3fba2::t_cc04fa351e156d 26-33
+projects/portal/src/app/app.html
+  s_3cc197aaf3fba2::t_cc04fa351e156d 6-13
+projects/portal/src/app/site.ts
+  s_3cc197aaf3fba2::t_cc04fa351e156d 3-4
+projects/portal/src/app/app.css
+  s_3cc197aaf3fba2::t_cc04fa351e156d 46-48
+projects/portal/src/app/app.ts
+  s_3cc197aaf3fba2::t_cc04fa351e156d 1,16
+projects/portal/src/index.html
+  s_3cc197aaf3fba2::t_cc04fa351e156d 22-40,42
+projects/portal/src/app/core/seo-title-strategy.spec.ts
+  s_3cc197aaf3fba2::t_cc04fa351e156d 5,64-73,91-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ca8e5d8b6d151bbcf0a7712644bd6d2c5819b1cc",
+  "prompts": {},
+  "sessions": {
+    "s_3cc197aaf3fba2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe067-d912-7211-bf4c-acb3d4ae7b02",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Celtian <dominik.hladik@seznam.cz>"
+    }
+  }
+}
