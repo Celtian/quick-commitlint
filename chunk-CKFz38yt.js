@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var a=`# Commit message format
+var a=`# Commit message format
 
 Quick Commitlint parses one UTF-8 commit message. The first line is the header; later paragraphs may form a body and a footer.
 

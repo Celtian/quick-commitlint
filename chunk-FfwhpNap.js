@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var s=`# Rules
+var s=`# Rules
 
 Quick Commitlint supports 14 rules. A rule tuple contains severity \`0\`, \`1\`, or \`2\`, an \`always\` or \`never\` condition when enabled, and an optional value determined by the rule.
 

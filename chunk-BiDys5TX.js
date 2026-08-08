@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var i=`# Usage
+var i=`# Usage
 
 Quick Commitlint reads exactly one commit message from a file or from standard input, discovers project configuration, evaluates all enabled rules, and prints one report.
 

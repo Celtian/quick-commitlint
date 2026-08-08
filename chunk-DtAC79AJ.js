@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var a=`# Getting started
+var a=`# Getting started
 
 Quick Commitlint checks commit messages against a focused set of commitlint-compatible rules using a native Zig executable. A small Node.js launcher selects the executable bundled for the current platform, with no additional runtime npm dependencies.
 

@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var n=`# Commitlint compatibility
+var n=`# Commitlint compatibility
 
 Quick Commitlint is a focused native implementation of a tested subset of Commitlint behavior. It is designed for projects that want the included Conventional or Angular rules without loading Commitlint's JavaScript configuration and rule stack for every commit.
 

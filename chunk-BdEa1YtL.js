@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var t=`# CLI reference
+var t=`# CLI reference
 
 \`\`\`text
 quick-commitlint [options] [commit-message-file]

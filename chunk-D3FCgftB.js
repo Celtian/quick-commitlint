@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var t=`# Performance
+var t=`# Performance
 
 Quick Commitlint runs message parsing, JSON configuration, and lint rules in a bundled native Zig executable. The npm command uses a small Node.js launcher to select that executable. Commitlint loads its Node.js configuration and linting stack in the CLI process.
 

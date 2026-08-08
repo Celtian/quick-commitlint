@@ -1,4 +1,4 @@
-import"./chunk-7CGTOI24.js";var n=`# Development
+var n=`# Development
 
 Quick Commitlint uses Zig for the published binary, Bun for development and packaging scripts, and Node.js for the published launcher.
 
