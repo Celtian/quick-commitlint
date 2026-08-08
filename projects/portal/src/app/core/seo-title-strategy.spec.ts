@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 import { provideRouter, Router, Routes, TitleStrategy } from '@angular/router';
-import { SITE_URL } from '../site';
+import { SITE_URL, SOCIAL_IMAGE_ALT, SOCIAL_IMAGE_URL } from '../site';
 import { SeoTitleStrategy } from './seo-title-strategy';
 
 const CUSTOM_TITLE = 'Configuration | Quick Commitlint';
@@ -61,7 +61,16 @@ describe('SeoTitleStrategy', () => {
     expect(meta.getTag('property="og:type"')?.content).toBe('website');
     expect(meta.getTag('property="og:site_name"')?.content).toBe(DEFAULT_TITLE);
     expect(meta.getTag('property="og:url"')?.content).toBe(canonicalUrl);
-    expect(meta.getTag('name="twitter:card"')?.content).toBe('summary');
+    expect(meta.getTag('property="og:image"')?.content).toBe(SOCIAL_IMAGE_URL);
+    expect(meta.getTag('property="og:image:type"')?.content).toBe('image/png');
+    expect(meta.getTag('property="og:image:width"')?.content).toBe('1200');
+    expect(meta.getTag('property="og:image:height"')?.content).toBe('630');
+    expect(meta.getTag('property="og:image:alt"')?.content).toBe(SOCIAL_IMAGE_ALT);
+    expect(meta.getTag('name="twitter:card"')?.content).toBe('summary_large_image');
+    expect(meta.getTag('name="twitter:title"')?.content).toBe(CUSTOM_TITLE);
+    expect(meta.getTag('name="twitter:description"')?.content).toBe(CUSTOM_DESCRIPTION);
+    expect(meta.getTag('name="twitter:image"')?.content).toBe(SOCIAL_IMAGE_URL);
+    expect(meta.getTag('name="twitter:image:alt"')?.content).toBe(SOCIAL_IMAGE_ALT);
     expect(canonical?.href).toBe(canonicalUrl);
   });
 
@@ -79,6 +88,8 @@ describe('SeoTitleStrategy', () => {
 
     expect(title.getTitle()).toBe(DEFAULT_TITLE);
     expect(meta.getTag('name="description"')?.content).toBe(DEFAULT_DESCRIPTION);
+    expect(meta.getTag('name="twitter:title"')?.content).toBe(DEFAULT_TITLE);
+    expect(meta.getTag('name="twitter:description"')?.content).toBe(DEFAULT_DESCRIPTION);
     expect(document.head.querySelector('link[rel="canonical"]')).toBe(canonical);
     expect(canonical.href).toBe(new URL('defaults/', SITE_URL).href);
   });

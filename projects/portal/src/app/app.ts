@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,6 +13,7 @@ import { GITHUB_URL } from './site';
   imports: [
     MatButtonModule,
     MatToolbarModule,
+    NgOptimizedImage,
     NgxScrollTopDirective,
     RouterLink,
     RouterLinkActive,

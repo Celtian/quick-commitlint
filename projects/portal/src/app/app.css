@@ -43,7 +43,9 @@ mat-toolbar {
 }
 
 .brand-mark {
-  font-size: 1.35rem;
+  display: block;
+  height: 2rem;
+  width: 2rem;
 }
 
 .primary-nav {

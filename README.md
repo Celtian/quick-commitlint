@@ -1,6 +1,15 @@
 <div align="center">
 
-# ⚡ Quick Commitlint
+<a href="https://github.com/Celtian/quick-commitlint">
+  <img
+    src="projects/portal/public/assets/brand/icon-192x192.png"
+    alt="Quick Commitlint logo"
+    width="120"
+    height="120"
+  />
+</a>
+
+# Quick Commitlint
 
 **A very fast, dependency-free commit message linter built with Zig.**
 
@@ -188,6 +197,10 @@ bun run portal:build:pages
 ```
 
 Every public route is prerendered for SEO. Pushing a `v*` tag that points at the current `master` commit runs `.github/workflows/main.yml`, publishes the native packages, and then deploys `dist/portal/browser` to the `gh-pages` branch as the workflow's final step. The repository must provide the `ACTIONS_DEPLOY_KEY` secret and configure GitHub Pages to publish from `gh-pages`.
+
+Brand artwork is maintained and generated in
+[`Celtian/app-logos`](https://github.com/Celtian/app-logos) under the `quick-commitlint` project.
+This repository checks in only the generated logo, favicon, and social image it consumes.
 
 ## 🏗️ Development
 

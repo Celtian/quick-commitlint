@@ -11,6 +11,8 @@ interface ExpectedPage {
 
 const outputDirectory = path.resolve('dist/portal/browser');
 const siteUrl = 'https://celtian.github.io/quick-commitlint/';
+const socialImageUrl = new URL('assets/brand/og-image.png', siteUrl).href;
+const socialImageAlt = 'Quick Commitlint lightning bolt logo';
 
 const pages: readonly ExpectedPage[] = [
   {
@@ -125,6 +127,12 @@ async function main(): Promise<void> {
     assert.ok(html.includes(`<title>${page.title}</title>`), `${label} must prerender its title`);
     assert.ok(html.includes(page.description), `${label} must prerender its description`);
     assert.ok(html.includes(canonicalUrl(page.route)), `${label} must prerender its canonical URL`);
+    assert.ok(html.includes(socialImageUrl), `${label} must prerender its social image URL`);
+    assert.ok(html.includes(socialImageAlt), `${label} must prerender its social image alt text`);
+    assert.ok(
+      html.includes('summary_large_image'),
+      `${label} must prerender its large Twitter card`,
+    );
     assert.ok(!html.includes('href="../'), `${label} must not contain base-href-unsafe links`);
   }
 
@@ -163,7 +171,12 @@ async function main(): Promise<void> {
     );
   }
 
-  await readFile(path.join(outputDirectory, 'robots.txt'), 'utf8');
+  await Promise.all([
+    readFile(path.join(outputDirectory, 'favicon.ico')),
+    readFile(path.join(outputDirectory, 'assets/brand/icon-192x192.png')),
+    readFile(path.join(outputDirectory, 'assets/brand/og-image.png')),
+    readFile(path.join(outputDirectory, 'robots.txt'), 'utf8'),
+  ]);
   const sitemap = await readFile(path.join(outputDirectory, 'sitemap.xml'), 'utf8');
   for (const page of pages.filter((page) => page.route !== 'docs' && page.route !== '404')) {
     assert.ok(
@@ -172,7 +185,7 @@ async function main(): Promise<void> {
     );
   }
 
-  console.log(`Verified ${pages.length} prerendered portal pages and SEO assets.`);
+  console.log(`Verified ${pages.length} prerendered portal pages, SEO metadata, and brand assets.`);
 }
 
 void main();

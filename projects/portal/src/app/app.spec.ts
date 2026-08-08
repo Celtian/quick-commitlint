@@ -23,6 +23,14 @@ describe('App', () => {
     expect(element.querySelector('a[href="#main-content"]')?.textContent).toContain('Skip');
     expect(element.querySelector('button[aria-label="Back to top"]')).not.toBeNull();
 
+    const brandLink = element.querySelector<HTMLAnchorElement>('a.brand');
+    const brandLogo = brandLink?.querySelector<HTMLImageElement>('img.brand-mark');
+    expect(brandLink?.getAttribute('aria-label')).toBe('Quick Commitlint home');
+    expect(brandLogo?.getAttribute('src')).toContain('assets/brand/icon-192x192.png');
+    expect(brandLogo?.getAttribute('alt')).toBe('');
+    expect(brandLogo?.width).toBe(32);
+    expect(brandLogo?.height).toBe(32);
+
     const results = await axe.run(element, {
       rules: {
         'color-contrast': { enabled: false },
